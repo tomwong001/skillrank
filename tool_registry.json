@@ -1,0 +1,1725 @@
+{
+  "meta": {
+    "version": "1.2.0",
+    "created": "2026-04-08T00:00:00Z",
+    "last_updated": "2026-04-08T21:00:00Z",
+    "total_tools": 35,
+    "description": "Universal tool registry for AI agent orchestrators. Every entry is machine-readable and optimized for ranked recommendation queries.",
+    "schema_version": "1.0"
+  },
+  "tools": [
+    {
+      "tool_id": "polygon_io",
+      "name": "Polygon.io",
+      "type": "api",
+      "category": "finance",
+      "task_types": [
+        "stock_price",
+        "stock_history",
+        "options",
+        "forex",
+        "crypto",
+        "indices"
+      ],
+      "quality_scores": {
+        "accuracy": 0.97,
+        "success_rate": 0.99,
+        "avg_latency_ms": 85,
+        "reliability": 0.995
+      },
+      "cost": {
+        "model": "subscription",
+        "free_tier": "unlimited delayed (15min) data",
+        "paid_plans": "Starter $29/mo (realtime), Developer $79/mo, Advanced $199/mo",
+        "cost_per_call": 0.0,
+        "notes": "Cost-per-call is $0 on all plans; pay flat monthly for access tier"
+      },
+      "limits": {
+        "rate_limit_rpm": 5,
+        "rate_limit_rpm_paid": "unlimited on Starter+",
+        "concurrency_limit": null,
+        "monthly_call_cap": "unlimited",
+        "data_freshness": "realtime (paid) / 15min delayed (free)"
+      },
+      "setup_complexity": "low",
+      "auth_required": true,
+      "auth_type": "api_key",
+      "best_for": "Realtime US equities, options chains, and aggregates; excellent WebSocket support for streaming",
+      "avoid_when": "Budget is $0 and realtime data is required; free tier is delayed only",
+      "failure_modes": [
+        "rate limit on free tier (5rpm)",
+        "WebSocket reconnect on high volume",
+        "global equities coverage less complete than US"
+      ],
+      "data_source": "documented",
+      "last_verified": "2026-04",
+      "sdk_available": true,
+      "sdk_languages": [
+        "python",
+        "javascript",
+        "go",
+        "kotlin"
+      ],
+      "recurring_free_tier": true
+    },
+    {
+      "tool_id": "alpha_vantage",
+      "name": "Alpha Vantage",
+      "type": "api",
+      "category": "finance",
+      "task_types": [
+        "stock_price",
+        "stock_history",
+        "forex",
+        "crypto",
+        "technical_indicators",
+        "fundamental_data"
+      ],
+      "quality_scores": {
+        "accuracy": 0.93,
+        "success_rate": 0.96,
+        "avg_latency_ms": 320,
+        "reliability": 0.96
+      },
+      "cost": {
+        "model": "subscription",
+        "free_tier": "25 requests/day",
+        "paid_plans": "$49.99/mo (75rpm), $99.99/mo (150rpm), $149.99/mo (300rpm), $199.99/mo (600rpm), $249.99/mo (1200rpm)",
+        "cost_per_call": 0.0,
+        "notes": "No daily cap on paid plans; all plans are flat rate"
+      },
+      "limits": {
+        "rate_limit_rpm": 5,
+        "rate_limit_rpm_free": 5,
+        "concurrency_limit": null,
+        "monthly_call_cap": "25/day free; unlimited paid",
+        "data_freshness": "realtime",
+        "rate_limit_rpm_paid": 75,
+        "rate_limit_rpm_paid_note": "75rpm at $49.99/mo up to 1200rpm at $249.99/mo"
+      },
+      "setup_complexity": "low",
+      "auth_required": true,
+      "auth_type": "api_key",
+      "best_for": "Technical indicators (50+), fundamental data, forex, crypto \u2014 good breadth for a low price",
+      "avoid_when": "Need >75 rpm on free tier; latency is high for realtime trading apps; free tier 25 req/day is barely enough for testing",
+      "failure_modes": [
+        "high latency on free tier",
+        "occasional stale data on premium endpoints",
+        "5rpm hard cap on free tier"
+      ],
+      "data_source": "documented",
+      "last_verified": "2026-04",
+      "sdk_available": true,
+      "sdk_languages": [
+        "python",
+        "javascript",
+        "r"
+      ],
+      "recurring_free_tier": true
+    },
+    {
+      "tool_id": "finnhub",
+      "name": "Finnhub",
+      "type": "api",
+      "category": "finance",
+      "task_types": [
+        "stock_price",
+        "stock_history",
+        "news_sentiment",
+        "earnings",
+        "fundamental_data",
+        "economic_data"
+      ],
+      "quality_scores": {
+        "accuracy": 0.94,
+        "success_rate": 0.97,
+        "avg_latency_ms": 150,
+        "reliability": 0.97
+      },
+      "cost": {
+        "model": "subscription",
+        "free_tier": "60 calls/minute, basic endpoints",
+        "paid_plans": "Basic $49.99/mo, Standard $129.99/mo, Professional $199.99/mo, All-in-one $3500/mo",
+        "cost_per_call": 0.0,
+        "notes": "Free tier is surprisingly generous at 60rpm for basic data; sentiment & fundamentals need paid"
+      },
+      "limits": {
+        "rate_limit_rpm": 60,
+        "rate_limit_rpm_free": 60,
+        "concurrency_limit": null,
+        "monthly_call_cap": "unlimited on all plans",
+        "data_freshness": "realtime"
+      },
+      "setup_complexity": "low",
+      "auth_required": true,
+      "auth_type": "api_key",
+      "best_for": "Best free tier for realtime stock quotes (60rpm); strong news and sentiment data; WebSocket support on free",
+      "avoid_when": "Need extensive fundamental or ETF data \u2014 those are expensive add-ons; avoid for global equities on free",
+      "failure_modes": [
+        "aggressive rate limiting on free tier for non-US data",
+        "websocket drops occasionally",
+        "sentiment data quality inconsistent"
+      ],
+      "data_source": "documented",
+      "last_verified": "2026-04",
+      "sdk_available": true,
+      "sdk_languages": [
+        "python",
+        "javascript",
+        "go"
+      ],
+      "recurring_free_tier": true
+    },
+    {
+      "tool_id": "twelve_data",
+      "name": "Twelve Data",
+      "type": "api",
+      "category": "finance",
+      "task_types": [
+        "stock_price",
+        "stock_history",
+        "technical_indicators",
+        "forex",
+        "crypto",
+        "etf"
+      ],
+      "quality_scores": {
+        "accuracy": 0.95,
+        "success_rate": 0.97,
+        "avg_latency_ms": 120,
+        "reliability": 0.97
+      },
+      "cost": {
+        "model": "credits",
+        "free_tier": "800 API credits/day (resets daily)",
+        "paid_plans": "Grow $79/mo (unlimited daily, 377 credits/min), Pro $229/mo (1597 credits/min), Ultra $999/mo (10946 credits/min)",
+        "cost_per_call": 0.0,
+        "notes": "Credit cost varies by endpoint: 1 credit for price, higher for fundamentals. No per-call charge \u2014 credits are rate budget"
+      },
+      "limits": {
+        "rate_limit_rpm": 8,
+        "rate_limit_rpm_paid": 377,
+        "concurrency_limit": null,
+        "monthly_call_cap": "800/day free; unlimited daily on paid",
+        "data_freshness": "realtime"
+      },
+      "setup_complexity": "low",
+      "auth_required": true,
+      "auth_type": "api_key",
+      "best_for": "Best value for global equities + technical indicators; 70+ markets on Pro; good WebSocket support",
+      "avoid_when": "Free tier 800/day is enough for testing but not production; credit system adds accounting complexity",
+      "failure_modes": [
+        "credit exhaustion mid-batch",
+        "higher-weight endpoints burn credits fast",
+        "WebSocket reconnect logic needed"
+      ],
+      "data_source": "documented",
+      "last_verified": "2026-04",
+      "sdk_available": true,
+      "sdk_languages": [
+        "python",
+        "javascript"
+      ],
+      "recurring_free_tier": true
+    },
+    {
+      "tool_id": "marketstack",
+      "name": "Marketstack",
+      "type": "api",
+      "category": "finance",
+      "task_types": [
+        "stock_price",
+        "stock_history",
+        "eod_data",
+        "dividends",
+        "splits"
+      ],
+      "quality_scores": {
+        "accuracy": 0.9,
+        "success_rate": 0.95,
+        "avg_latency_ms": 400,
+        "reliability": 0.94
+      },
+      "cost": {
+        "model": "subscription_with_quota",
+        "free_tier": "100 requests/month (end-of-day only)",
+        "paid_plans": "Basic $9.99/mo (10k req), Professional $49.99/mo (100k req), Business $149.99/mo (500k req)",
+        "cost_per_call": 0.001,
+        "notes": "Effectively $0.001/call on Basic. Best cheapest entry point for EOD data"
+      },
+      "limits": {
+        "rate_limit_rps": 5,
+        "concurrency_limit": null,
+        "monthly_call_cap": "100 free; 10k Basic; 100k Pro",
+        "data_freshness": "end-of-day (free), realtime (paid)"
+      },
+      "setup_complexity": "low",
+      "auth_required": true,
+      "auth_type": "api_key",
+      "best_for": "Cheapest paid EOD stock data ($9.99/mo for 10k calls); covers 70+ exchanges; simple REST API",
+      "avoid_when": "Need realtime data on a budget; 100 req/month free is almost unusable for testing; latency high",
+      "failure_modes": [
+        "strict monthly cap with no rollover",
+        "intraday data unreliable on lower tiers",
+        "slow response times"
+      ],
+      "data_source": "documented",
+      "last_verified": "2026-04",
+      "sdk_available": false,
+      "recurring_free_tier": false
+    },
+    {
+      "tool_id": "yahoo_finance_unofficial",
+      "name": "Yahoo Finance (Unofficial / yfinance)",
+      "type": "api",
+      "category": "finance",
+      "task_types": [
+        "stock_price",
+        "stock_history",
+        "options",
+        "fundamental_data",
+        "news"
+      ],
+      "quality_scores": {
+        "accuracy": 0.88,
+        "success_rate": 0.82,
+        "avg_latency_ms": 500,
+        "reliability": 0.8
+      },
+      "cost": {
+        "model": "free_unofficial",
+        "free_tier": "unlimited (unofficial scraping)",
+        "paid_plans": "none",
+        "cost_per_call": 0.0,
+        "notes": "Not an official API \u2014 uses undocumented endpoints. Subject to breaking changes and rate limiting without notice"
+      },
+      "limits": {
+        "rate_limit_rpm": null,
+        "concurrency_limit": "aggressive throttling above ~100rpm",
+        "monthly_call_cap": null,
+        "data_freshness": "15min delayed for non-authenticated"
+      },
+      "setup_complexity": "low",
+      "auth_required": false,
+      "auth_type": "none",
+      "best_for": "Zero-cost prototyping and research; broadest data coverage (options, fundamentals, news) at $0; tolerate instability",
+      "avoid_when": "Production use; SLA required; TOS compliance matters; high concurrency; reliability above 90% required",
+      "failure_modes": [
+        "endpoint breaks without notice",
+        "anti-scraping blocks",
+        "ToS violation risk",
+        "data gaps on non-US equities",
+        "15-min delay for free"
+      ],
+      "data_source": "community_measured",
+      "last_verified": "2026-04",
+      "sdk_available": true,
+      "sdk_languages": [
+        "python"
+      ],
+      "recurring_free_tier": false
+    },
+    {
+      "tool_id": "openmeteo",
+      "name": "Open-Meteo",
+      "type": "api",
+      "category": "weather",
+      "task_types": [
+        "current_weather",
+        "forecast",
+        "historical_weather",
+        "air_quality",
+        "marine",
+        "ensemble_forecast"
+      ],
+      "quality_scores": {
+        "accuracy": 0.91,
+        "success_rate": 0.98,
+        "avg_latency_ms": 1500,
+        "reliability": 0.97
+      },
+      "cost": {
+        "model": "free_with_commercial_tiers",
+        "free_tier": "Non-commercial: 10,000 calls/day, 600/min",
+        "paid_plans": "API Standard: ~\u20ac40/mo (1M calls/mo), Professional: ~\u20ac120/mo (5M calls/mo), Enterprise: custom",
+        "cost_per_call": 4e-05,
+        "notes": "Free tier explicitly non-commercial. Paid plans allow commercial use. Fractional call counting for complex requests"
+      },
+      "limits": {
+        "rate_limit_rpm": 600,
+        "monthly_call_cap": "300k/mo (free); 1M (Standard); 5M (Professional)",
+        "concurrency_limit": null,
+        "data_freshness": "hourly model updates, 7-day forecast"
+      },
+      "setup_complexity": "very_low",
+      "auth_required": false,
+      "auth_type": "api_key (paid tiers only)",
+      "best_for": "Best free weather API for non-commercial use; no auth needed on free tier; ensemble forecasts + air quality; latency ~1s from cloud sandboxes",
+      "avoid_when": "Commercial use requires paid plan (auth); response latency ~1s may be too slow for high-frequency agents; no realtime data",
+      "failure_modes": [
+        "no SLA on free tier",
+        "fractional call counting surprises",
+        "commercial use ToS violation risk"
+      ],
+      "data_source": "measured",
+      "last_verified": "2026-04",
+      "sdk_available": false,
+      "auth_required_paid_tier": true,
+      "notes_latency": "Latency measured across 4 eval runs (2026-04-08): avg ~1500ms from cloud sandbox. High variance (1000-2000ms). Real-world user latency likely lower.",
+      "recurring_free_tier": true
+    },
+    {
+      "tool_id": "openweathermap",
+      "name": "OpenWeatherMap",
+      "type": "api",
+      "category": "weather",
+      "task_types": [
+        "current_weather",
+        "forecast",
+        "historical_weather",
+        "air_quality",
+        "alerts"
+      ],
+      "quality_scores": {
+        "accuracy": 0.88,
+        "success_rate": 0.97,
+        "avg_latency_ms": 250,
+        "reliability": 0.96
+      },
+      "cost": {
+        "model": "freemium",
+        "free_tier": "1,000 calls/day, 60 calls/min",
+        "paid_plans": "Developer $0/mo; Startup $40/mo (300k/mo); Developer+ $180/mo (2M/mo); Professional $470/mo (5M/mo)",
+        "cost_per_call": 0.0,
+        "notes": "Free tier allows commercial use; 1k/day is workable for small apps"
+      },
+      "limits": {
+        "rate_limit_rpm": 60,
+        "monthly_call_cap": "30k/mo free; higher on paid",
+        "concurrency_limit": null,
+        "data_freshness": "realtime + forecast"
+      },
+      "setup_complexity": "low",
+      "auth_required": true,
+      "auth_type": "api_key",
+      "best_for": "Best freemium weather API; allows commercial use on free tier; global coverage; well-documented; widely supported in SDKs",
+      "avoid_when": "Need ensemble forecasts, marine, or air quality on free; need > 60rpm free",
+      "failure_modes": [
+        "60rpm cap on free causes throttling in bursts",
+        "historical data expensive",
+        "accuracy below some competitors"
+      ],
+      "data_source": "documented",
+      "last_verified": "2026-04",
+      "sdk_available": true,
+      "sdk_languages": [
+        "python",
+        "javascript",
+        "ruby",
+        "php"
+      ],
+      "recurring_free_tier": true
+    },
+    {
+      "tool_id": "weatherapi_com",
+      "name": "WeatherAPI.com",
+      "type": "api",
+      "category": "weather",
+      "task_types": [
+        "current_weather",
+        "forecast",
+        "historical_weather",
+        "alerts",
+        "astronomy",
+        "sports"
+      ],
+      "quality_scores": {
+        "accuracy": 0.87,
+        "success_rate": 0.97,
+        "avg_latency_ms": 200,
+        "reliability": 0.95
+      },
+      "cost": {
+        "model": "freemium",
+        "free_tier": "1M calls/month, 14-day forecast",
+        "paid_plans": "Starter $4/mo, Standard $12/mo, Pro $35/mo, Business $65/mo (each increases history and features)",
+        "cost_per_call": 0.0,
+        "notes": "Most generous free tier among commercial weather APIs: 1M calls/month"
+      },
+      "limits": {
+        "rate_limit_rpm": null,
+        "monthly_call_cap": "1M/mo free",
+        "concurrency_limit": null,
+        "data_freshness": "realtime"
+      },
+      "setup_complexity": "low",
+      "auth_required": true,
+      "auth_type": "api_key",
+      "best_for": "Most generous free tier (1M/mo); historical data from 2010; astronomy; hyperlocal via IP/lat-lon; lowest entry price $4/mo",
+      "avoid_when": "Need ensemble modeling, climate data, or very high accuracy \u2014 OWM or Open-Meteo better for those",
+      "failure_modes": [
+        "accuracy slightly below premium",
+        "no SLA on free tier",
+        "rate limits undocumented"
+      ],
+      "data_source": "documented",
+      "last_verified": "2026-04",
+      "sdk_available": true,
+      "sdk_languages": [
+        "python",
+        "javascript"
+      ],
+      "recurring_free_tier": true
+    },
+    {
+      "tool_id": "tomorrow_io",
+      "name": "Tomorrow.io",
+      "type": "api",
+      "category": "weather",
+      "task_types": [
+        "current_weather",
+        "forecast",
+        "nowcast",
+        "climate_risk",
+        "severe_weather_alerts"
+      ],
+      "quality_scores": {
+        "accuracy": 0.94,
+        "success_rate": 0.98,
+        "avg_latency_ms": 180,
+        "reliability": 0.98
+      },
+      "cost": {
+        "model": "freemium",
+        "free_tier": "500 calls/day, 25 calls/hour",
+        "paid_plans": "Developer $0, Growth $79/mo, Business custom",
+        "cost_per_call": 0.0,
+        "notes": "Free tier is 500/day commercial-allowed; best-in-class accuracy from proprietary satellite+ML model"
+      },
+      "limits": {
+        "rate_limit_rph": 25,
+        "monthly_call_cap": "15k/mo free",
+        "concurrency_limit": null,
+        "data_freshness": "1-min nowcast; 6hr-updated forecast"
+      },
+      "setup_complexity": "low",
+      "auth_required": true,
+      "auth_type": "api_key",
+      "best_for": "Highest accuracy weather data; minute-level nowcasting; severe weather/climate risk; proprietary ML model",
+      "avoid_when": "Free tier 25 calls/hour is very restrictive; expensive at scale; overkill for simple forecast use cases",
+      "failure_modes": [
+        "very low rate limit on free tier",
+        "high latency on complex queries",
+        "pricing opaque for Business tier"
+      ],
+      "data_source": "documented",
+      "last_verified": "2026-04",
+      "sdk_available": true,
+      "sdk_languages": [
+        "python",
+        "javascript"
+      ],
+      "recurring_free_tier": true
+    },
+    {
+      "tool_id": "brave_search_api",
+      "name": "Brave Search API",
+      "type": "api",
+      "category": "search",
+      "task_types": [
+        "web_search",
+        "news_search",
+        "image_search",
+        "video_search",
+        "local_search",
+        "llm_context"
+      ],
+      "quality_scores": {
+        "accuracy": 0.9,
+        "success_rate": 0.99,
+        "avg_latency_ms": 300,
+        "reliability": 0.99
+      },
+      "cost": {
+        "model": "pay_per_use_with_free_credits",
+        "free_tier": "$5 free monthly credits (~1000 queries free/mo)",
+        "paid_plans": "Search: $5/1k queries (50qps); Answers: $4/1k + $5/M tokens (2qps)",
+        "cost_per_call": 0.005,
+        "notes": "Credit card required for signup; $5/mo free auto-applied. Truly independent index \u2014 not Google/Bing reseller"
+      },
+      "limits": {
+        "rate_limit_qps": 50,
+        "rate_limit_qps_answers": 2,
+        "monthly_call_cap": null,
+        "data_freshness": "near-realtime, minutes-to-hours lag"
+      },
+      "setup_complexity": "low",
+      "auth_required": true,
+      "auth_type": "api_key",
+      "best_for": "Privacy-preserving independent search index; high QPS (50); LLM-optimized result format; best for agents needing web search at scale",
+      "avoid_when": "Need realtime news; Answers endpoint max 2qps is too slow for concurrent agents; credit card barrier for free tier",
+      "failure_modes": [
+        "Answers endpoint rate limit very low (2qps)",
+        "freshness lag for breaking news",
+        "smaller index than Google/Bing"
+      ],
+      "data_source": "documented",
+      "last_verified": "2026-04",
+      "sdk_available": false,
+      "recurring_free_tier": true
+    },
+    {
+      "tool_id": "tavily_search",
+      "name": "Tavily Search API",
+      "type": "api",
+      "category": "search",
+      "task_types": [
+        "web_search",
+        "research",
+        "news_search",
+        "llm_context",
+        "fact_check"
+      ],
+      "quality_scores": {
+        "accuracy": 0.92,
+        "success_rate": 0.98,
+        "avg_latency_ms": 1800,
+        "reliability": 0.97
+      },
+      "cost": {
+        "model": "credits",
+        "free_tier": "1,000 API credits/month (no credit card)",
+        "paid_plans": "Pay-as-you-go $0.008/credit; Project ~$30/mo (4k credits); Enterprise custom",
+        "cost_per_call": 0.008,
+        "notes": "No credit card needed for free tier \u2014 very agent-friendly; designed specifically for LLM/RAG workflows"
+      },
+      "limits": {
+        "rate_limit_rpm": null,
+        "monthly_call_cap": "1000 free/mo",
+        "concurrency_limit": null,
+        "data_freshness": "near-realtime"
+      },
+      "setup_complexity": "very_low",
+      "auth_required": true,
+      "auth_type": "api_key",
+      "best_for": "Best search API purpose-built for AI agents; no credit card for free tier; LLM-ready structured results; includes content extraction",
+      "avoid_when": "High query volume on a budget ($0.008/query adds up); latency ~1.8s per query limits real-time use cases",
+      "failure_modes": [
+        "high latency (1-3s typical)",
+        "credits exhaust quickly at scale",
+        "less comprehensive than Brave for raw index size"
+      ],
+      "data_source": "documented",
+      "last_verified": "2026-04",
+      "sdk_available": true,
+      "sdk_languages": [
+        "python",
+        "javascript"
+      ],
+      "recurring_free_tier": true
+    },
+    {
+      "tool_id": "exa_search",
+      "name": "Exa Search API",
+      "type": "api",
+      "category": "search",
+      "task_types": [
+        "semantic_search",
+        "web_search",
+        "research",
+        "content_extraction",
+        "similar_content"
+      ],
+      "quality_scores": {
+        "accuracy": 0.93,
+        "success_rate": 0.98,
+        "avg_latency_ms": 900,
+        "reliability": 0.97
+      },
+      "cost": {
+        "model": "pay_per_use_with_free_tier",
+        "free_tier": "1,000 requests/month",
+        "paid_plans": "Search $7/1k; Deep Search $12/1k; Deep-Reasoning $15/1k; Contents $1/1k pages; Answer $5/1k",
+        "cost_per_call": 0.007,
+        "notes": "Unique semantic/neural search model \u2014 finds conceptually relevant results not just keyword matches; $1k startup grant available"
+      },
+      "limits": {
+        "rate_limit_qps": null,
+        "monthly_call_cap": "1000 free/mo",
+        "concurrency_limit": null,
+        "data_freshness": "near-realtime"
+      },
+      "setup_complexity": "low",
+      "auth_required": true,
+      "auth_type": "api_key",
+      "best_for": "Semantic search where keyword search fails; research agents needing conceptually similar content; content extraction pipeline; unique index",
+      "avoid_when": "Simple keyword search queries (overkill + expensive vs Brave); need >50 QPS; latency-sensitive real-time tasks",
+      "failure_modes": [
+        "semantic mismatch for very literal queries",
+        "rate limits undocumented for non-enterprise",
+        "expensive at scale ($7-15/1k)"
+      ],
+      "data_source": "documented",
+      "last_verified": "2026-04",
+      "sdk_available": true,
+      "sdk_languages": [
+        "python",
+        "javascript"
+      ],
+      "recurring_free_tier": true
+    },
+    {
+      "tool_id": "serper_api",
+      "name": "Serper.dev (Google Search API)",
+      "type": "api",
+      "category": "search",
+      "task_types": [
+        "web_search",
+        "news_search",
+        "image_search",
+        "places_search",
+        "shopping_search"
+      ],
+      "quality_scores": {
+        "accuracy": 0.95,
+        "success_rate": 0.99,
+        "avg_latency_ms": 400,
+        "reliability": 0.99
+      },
+      "cost": {
+        "model": "pay_per_use",
+        "free_tier": "2,500 free queries (one-time)",
+        "paid_plans": "$50/mo (50k queries); $100/mo (150k); $250/mo (500k); $450/mo (1M)",
+        "cost_per_call": 0.001,
+        "notes": "Wraps Google SERP \u2014 highest quality results. Very cost efficient at scale ($0.45/1k at 1M plan)"
+      },
+      "limits": {
+        "rate_limit_rpm": null,
+        "monthly_call_cap": null,
+        "concurrency_limit": null,
+        "data_freshness": "realtime (Google index)"
+      },
+      "setup_complexity": "very_low",
+      "auth_required": true,
+      "auth_type": "api_key",
+      "best_for": "When Google result quality is required; best price-per-query at scale; includes news, images, places in one API; fast",
+      "avoid_when": "Privacy concerns about Google; need independence from big-tech index; free tier is one-time not recurring",
+      "failure_modes": [
+        "Google ToS exposure for resellers",
+        "no free recurring tier",
+        "results depend on Google algorithm changes"
+      ],
+      "data_source": "documented",
+      "last_verified": "2026-04",
+      "sdk_available": false,
+      "recurring_free_tier": false
+    },
+    {
+      "tool_id": "duckduckgo_instant_answers",
+      "name": "DuckDuckGo Instant Answers API",
+      "type": "api",
+      "category": "search",
+      "task_types": [
+        "instant_answer",
+        "definition_lookup",
+        "factual_query"
+      ],
+      "quality_scores": {
+        "accuracy": 0.75,
+        "success_rate": 0.95,
+        "avg_latency_ms": 900,
+        "reliability": 0.94
+      },
+      "cost": {
+        "model": "free",
+        "free_tier": "unlimited (no auth)",
+        "paid_plans": "none",
+        "cost_per_call": 0.0,
+        "notes": "Unofficial but tolerated. Returns structured instant answers only \u2014 not full search results"
+      },
+      "limits": {
+        "rate_limit_rpm": "self-imposed courtesy limit recommended",
+        "monthly_call_cap": null,
+        "concurrency_limit": null,
+        "data_freshness": "static knowledge base"
+      },
+      "setup_complexity": "very_low",
+      "auth_required": false,
+      "auth_type": "none",
+      "best_for": "Zero-cost factual lookups and definitions; no auth; fast; great for agent fallback when budget is $0",
+      "avoid_when": "Need web search results; need news; need >70% answer rate; production use with SLA",
+      "failure_modes": [
+        "often returns no result (~30% empty)",
+        "no full SERP",
+        "ToS not explicit about API use",
+        "stale data"
+      ],
+      "data_source": "measured",
+      "last_verified": "2026-04",
+      "sdk_available": false,
+      "recurring_free_tier": true,
+      "notes_latency": "Latency measured across 2 eval runs from cloud sandbox: 703ms (run1), 1268ms (run4). Registry estimate corrected from 150ms (community-reported) to 900ms (measured)."
+    },
+    {
+      "tool_id": "firecrawl",
+      "name": "Firecrawl",
+      "type": "api",
+      "category": "scraping",
+      "task_types": [
+        "web_scraping",
+        "web_crawling",
+        "content_extraction",
+        "pdf_extraction",
+        "structured_extraction"
+      ],
+      "quality_scores": {
+        "accuracy": 0.93,
+        "success_rate": 0.94,
+        "avg_latency_ms": 2500,
+        "reliability": 0.93
+      },
+      "cost": {
+        "model": "credits",
+        "free_tier": "500 credits one-time (no recurring free)",
+        "paid_plans": "Hobby $16/mo (3k credits); Standard $83/mo (100k credits); Growth $333/mo (500k credits); Scale $599/mo (1M credits)",
+        "cost_per_call": 0.001,
+        "notes": "1 credit per page scraped; browser automation 2 credits/min; LLM extraction extra. Handles JS-heavy sites well"
+      },
+      "limits": {
+        "rate_limit_rpm": 2,
+        "rate_limit_rpm_paid": 50,
+        "concurrency_limit": 2,
+        "concurrency_paid": 50,
+        "monthly_call_cap": null,
+        "data_freshness": "on-demand"
+      },
+      "setup_complexity": "low",
+      "auth_required": true,
+      "auth_type": "api_key",
+      "best_for": "JS-rendered sites, Playwright-backed; structured data extraction with LLM; crawling entire sites; clean markdown output for RAG",
+      "avoid_when": "Free tier is one-time 500 credits only; slow (2.5s avg); low concurrency on free; not for high-volume commodity scraping",
+      "failure_modes": [
+        "JS anti-bot sites still fail occasionally",
+        "high latency per page",
+        "credit burn on browser automation",
+        "no recurring free tier"
+      ],
+      "data_source": "documented",
+      "last_verified": "2026-04",
+      "sdk_available": true,
+      "sdk_languages": [
+        "python",
+        "javascript"
+      ],
+      "recurring_free_tier": true
+    },
+    {
+      "tool_id": "apify",
+      "name": "Apify",
+      "type": "api",
+      "category": "scraping",
+      "task_types": [
+        "web_scraping",
+        "web_crawling",
+        "social_media_scraping",
+        "ecommerce_scraping",
+        "actor_marketplace"
+      ],
+      "quality_scores": {
+        "accuracy": 0.91,
+        "success_rate": 0.92,
+        "avg_latency_ms": 5000,
+        "reliability": 0.9
+      },
+      "cost": {
+        "model": "compute_units_monthly",
+        "free_tier": "$5 credits/month (no rollover)",
+        "paid_plans": "Starter $29/mo; Scale $199/mo; Business $999/mo \u2014 CU rates $0.30/$0.25/$0.20",
+        "cost_per_call": null,
+        "notes": "Billed per CU (1 GB RAM \u00d7 1 hour). Cost varies dramatically by actor. 1500+ pre-built actors in marketplace. Free $5/mo"
+      },
+      "limits": {
+        "rate_limit_rpm": null,
+        "monthly_call_cap": null,
+        "concurrency_limit": "parallel actor runs scale with plan",
+        "data_freshness": "on-demand"
+      },
+      "setup_complexity": "medium",
+      "auth_required": true,
+      "auth_type": "api_key",
+      "best_for": "Complex scraping workflows; 1500+ ready-made actors for specific sites; social media data; when custom scraper dev time is costly",
+      "avoid_when": "Simple static page scraping (overkill vs Firecrawl); unpredictable billing from CU model; slow per-task start time",
+      "failure_modes": [
+        "CU billing hard to predict",
+        "actor quality varies in marketplace",
+        "slow cold start per run",
+        "anti-bot evasion inconsistent by actor"
+      ],
+      "data_source": "documented",
+      "last_verified": "2026-04",
+      "sdk_available": true,
+      "sdk_languages": [
+        "python",
+        "javascript"
+      ],
+      "recurring_free_tier": true
+    },
+    {
+      "tool_id": "brightdata",
+      "name": "Bright Data (formerly Luminati)",
+      "type": "api",
+      "category": "scraping",
+      "task_types": [
+        "web_scraping",
+        "residential_proxy",
+        "datacenter_proxy",
+        "serp_scraping",
+        "ecommerce_scraping"
+      ],
+      "quality_scores": {
+        "accuracy": 0.95,
+        "success_rate": 0.97,
+        "avg_latency_ms": 3000,
+        "reliability": 0.97
+      },
+      "cost": {
+        "model": "pay_per_gb_or_subscription",
+        "free_tier": "trial available on request",
+        "paid_plans": "From $500/mo for residential proxies; SERP API from $3/1k results; Web Scraper IDE from $15/mo",
+        "cost_per_call": 0.003,
+        "notes": "Enterprise-grade; most anti-bot resistant; very expensive for most use cases. Best-in-class for highly protected sites"
+      },
+      "limits": {
+        "rate_limit_rpm": null,
+        "monthly_call_cap": null,
+        "concurrency_limit": "scales with plan",
+        "data_freshness": "on-demand"
+      },
+      "setup_complexity": "high",
+      "auth_required": true,
+      "auth_type": "credentials",
+      "best_for": "Enterprise scraping of heavily protected sites (Amazon, LinkedIn, Google); residential IP rotation; when reliability is paramount",
+      "avoid_when": "Budget < $500/mo; simple sites; ethical concerns about residential proxy network model",
+      "failure_modes": [
+        "very expensive",
+        "complex setup",
+        "ethical/legal gray area for residential proxies",
+        "overkill for standard scraping"
+      ],
+      "data_source": "documented",
+      "last_verified": "2026-04",
+      "sdk_available": true,
+      "sdk_languages": [
+        "python",
+        "javascript",
+        "java"
+      ],
+      "recurring_free_tier": true
+    },
+    {
+      "tool_id": "jina_reader",
+      "name": "Jina AI Reader",
+      "type": "api",
+      "category": "scraping",
+      "task_types": [
+        "content_extraction",
+        "webpage_to_markdown",
+        "pdf_extraction"
+      ],
+      "quality_scores": {
+        "accuracy": 0.88,
+        "success_rate": 0.91,
+        "avg_latency_ms": 1800,
+        "reliability": 0.9
+      },
+      "cost": {
+        "model": "freemium_token_based",
+        "free_tier": "10M tokens free (no credit card); 20 RPM",
+        "paid_plans": "Token pricing: ~$0.02/M tokens; Paid: 500 RPM; Premium: 5,000 RPM",
+        "cost_per_call": 0.0,
+        "notes": "Zero-setup: prefix any URL with r.jina.ai/ for clean markdown. Auth optional on free. 10M free tokens \u2248 ~10k typical page reads."
+      },
+      "limits": {
+        "rate_limit_rpm": 20,
+        "monthly_call_cap": null,
+        "concurrency_limit": null,
+        "data_freshness": "on-demand",
+        "rate_limit_rpm_paid": 500,
+        "rate_limit_rpm_premium": 5000
+      },
+      "setup_complexity": "very_low",
+      "auth_required": false,
+      "auth_type": "none_free",
+      "best_for": "Simplest possible URL-to-markdown extraction \u2014 zero setup, just prefix URL with r.jina.ai/; 10M free tokens; great for RAG pipelines and one-off scrapes",
+      "avoid_when": "High-volume scraping (500 RPM cap on paid); JavaScript-heavy SPAs may not render fully; premium rate limits need enterprise agreement",
+      "failure_modes": [
+        "JS-heavy sites return incomplete content",
+        "20rpm rate limit on free",
+        "anti-bot detection on some sites"
+      ],
+      "data_source": "documented",
+      "last_verified": "2026-04",
+      "sdk_available": false,
+      "recurring_free_tier": true
+    },
+    {
+      "tool_id": "skill_cold_email_v1",
+      "name": "Cold Email Skill \u2014 Sales Focus (v1)",
+      "type": "skill",
+      "category": "email_writing",
+      "task_types": [
+        "write_cold_email",
+        "sales_outreach",
+        "b2b_email"
+      ],
+      "quality_scores": {
+        "accuracy": 0.85,
+        "success_rate": 0.9,
+        "avg_latency_ms": 3000,
+        "reliability": 1.0
+      },
+      "cost": {
+        "model": "llm_tokens",
+        "free_tier": "n/a",
+        "paid_plans": "LLM token cost only (~$0.001-0.01 per email)",
+        "cost_per_call": 0.005,
+        "notes": "Optimized for SaaS sales outreach. Follows AIDA framework. High personalization hooks."
+      },
+      "limits": {
+        "rate_limit_rpm": null,
+        "concurrency_limit": null,
+        "monthly_call_cap": null,
+        "data_freshness": "n/a"
+      },
+      "setup_complexity": "very_low",
+      "auth_required": false,
+      "auth_type": "none",
+      "best_for": "B2B SaaS sales emails; AIDA structure; strong call-to-action; personalization with company research",
+      "avoid_when": "Recruiting emails; enterprise procurement; founder-to-founder; tone too aggressive for some verticals",
+      "failure_modes": [
+        "generic if no personalization data provided",
+        "too salesy for relationship-first industries"
+      ],
+      "data_source": "internal_eval",
+      "last_verified": "2026-04",
+      "skill_prompt_hash": "sha256_abc123",
+      "sdk_available": false,
+      "variant_group": "cold_email",
+      "recurring_free_tier": true
+    },
+    {
+      "tool_id": "skill_cold_email_v2",
+      "name": "Cold Email Skill \u2014 Founder Outreach (v2)",
+      "type": "skill",
+      "category": "email_writing",
+      "task_types": [
+        "write_cold_email",
+        "founder_networking",
+        "partnership_email"
+      ],
+      "quality_scores": {
+        "accuracy": 0.88,
+        "success_rate": 0.91,
+        "avg_latency_ms": 3500,
+        "reliability": 1.0
+      },
+      "cost": {
+        "model": "llm_tokens",
+        "free_tier": "n/a",
+        "paid_plans": "LLM token cost only",
+        "cost_per_call": 0.006,
+        "notes": "Peer-to-peer tone. Focuses on mutual value and curiosity. Works well for investor intros and founder-to-founder."
+      },
+      "limits": {
+        "rate_limit_rpm": null,
+        "concurrency_limit": null,
+        "monthly_call_cap": null,
+        "data_freshness": "n/a"
+      },
+      "setup_complexity": "very_low",
+      "auth_required": false,
+      "auth_type": "none",
+      "best_for": "Investor outreach, co-founder search, partnership proposals; casual professional tone; storytelling over pitch",
+      "avoid_when": "Mass cold email campaigns (tone too personal at scale); purely transactional B2B sales",
+      "failure_modes": [
+        "too conversational for enterprise procurement",
+        "vague CTA if business context not provided"
+      ],
+      "data_source": "internal_eval",
+      "last_verified": "2026-04",
+      "skill_prompt_hash": "sha256_def456",
+      "sdk_available": false,
+      "variant_group": "cold_email",
+      "recurring_free_tier": true
+    },
+    {
+      "tool_id": "skill_cold_email_v3",
+      "name": "Cold Email Skill \u2014 Recruiting Focus (v3)",
+      "type": "skill",
+      "category": "email_writing",
+      "task_types": [
+        "write_cold_email",
+        "recruiting_email",
+        "talent_sourcing"
+      ],
+      "quality_scores": {
+        "accuracy": 0.87,
+        "success_rate": 0.89,
+        "avg_latency_ms": 2800,
+        "reliability": 1.0
+      },
+      "cost": {
+        "model": "llm_tokens",
+        "free_tier": "n/a",
+        "paid_plans": "LLM token cost only",
+        "cost_per_call": 0.005,
+        "notes": "Tuned for talent outreach. Highlights role, culture, compensation signals. Avoids generic \"exciting opportunity\" language."
+      },
+      "limits": {
+        "rate_limit_rpm": null,
+        "concurrency_limit": null,
+        "monthly_call_cap": null,
+        "data_freshness": "n/a"
+      },
+      "setup_complexity": "very_low",
+      "auth_required": false,
+      "auth_type": "none",
+      "best_for": "Recruiting passive candidates; roles with strong culture or mission; when role specifics are known; personalized to candidate background",
+      "avoid_when": "General B2B sales; investor outreach; needs company research context to be effective",
+      "failure_modes": [
+        "generic without candidate profile data",
+        "mismatches on comp expectations if not provided"
+      ],
+      "data_source": "internal_eval",
+      "last_verified": "2026-04",
+      "skill_prompt_hash": "sha256_ghi789",
+      "sdk_available": false,
+      "variant_group": "cold_email",
+      "recurring_free_tier": true
+    },
+    {
+      "tool_id": "skill_cold_email_v4",
+      "name": "Cold Email Skill \u2014 Minimal/Short (v4)",
+      "type": "skill",
+      "category": "email_writing",
+      "task_types": [
+        "write_cold_email",
+        "short_email",
+        "high_volume_outreach"
+      ],
+      "quality_scores": {
+        "accuracy": 0.82,
+        "success_rate": 0.86,
+        "avg_latency_ms": 1500,
+        "reliability": 1.0
+      },
+      "cost": {
+        "model": "llm_tokens",
+        "free_tier": "n/a",
+        "paid_plans": "LLM token cost only (~$0.0005 per email \u2014 very cheap)",
+        "cost_per_call": 0.001,
+        "notes": "Forces output under 60 words. Ultra-short format. Best reply rate in A/B tests for cold outreach >500 emails. Cheap to run."
+      },
+      "limits": {
+        "rate_limit_rpm": null,
+        "concurrency_limit": null,
+        "monthly_call_cap": null,
+        "data_freshness": "n/a"
+      },
+      "setup_complexity": "very_low",
+      "auth_required": false,
+      "auth_type": "none",
+      "best_for": "High volume outreach where reply rate > quality; under 60 words; mobile-first reading; minimal context needed",
+      "avoid_when": "Complex enterprise sales requiring detailed context; senior executive outreach; high-trust relationship building",
+      "failure_modes": [
+        "lacks depth for complex value props",
+        "may feel abrupt to senior audiences",
+        "no structure for multi-step nurture sequences"
+      ],
+      "data_source": "internal_eval",
+      "last_verified": "2026-04",
+      "skill_prompt_hash": "sha256_jkl012",
+      "sdk_available": false,
+      "variant_group": "cold_email",
+      "recurring_free_tier": true
+    },
+    {
+      "tool_id": "skill_cold_email_v5",
+      "name": "Cold Email Skill \u2014 Research-Heavy (v5)",
+      "type": "skill",
+      "category": "email_writing",
+      "task_types": [
+        "write_cold_email",
+        "hyper_personalized_email",
+        "account_based_marketing"
+      ],
+      "quality_scores": {
+        "accuracy": 0.93,
+        "success_rate": 0.88,
+        "avg_latency_ms": 8000,
+        "reliability": 1.0
+      },
+      "cost": {
+        "model": "llm_tokens",
+        "free_tier": "n/a",
+        "paid_plans": "LLM token cost (~$0.02-0.05 per email \u2014 expensive due to research calls)",
+        "cost_per_call": 0.03,
+        "notes": "Makes web search calls to research target company before writing. High-quality but expensive. Best for ABM campaigns."
+      },
+      "limits": {
+        "rate_limit_rpm": null,
+        "concurrency_limit": null,
+        "monthly_call_cap": null,
+        "data_freshness": "near-realtime via search"
+      },
+      "setup_complexity": "medium",
+      "auth_required": true,
+      "auth_type": "search_api_key",
+      "best_for": "Account-based marketing; strategic enterprise sales; when personalization is the competitive advantage; low volume, high value deals",
+      "avoid_when": "High volume (>100/day) due to cost; when speed matters more than quality; no search API connected",
+      "failure_modes": [
+        "expensive at scale",
+        "slow (8s avg)",
+        "requires search API dependency",
+        "research quality varies by target"
+      ],
+      "data_source": "internal_eval",
+      "last_verified": "2026-04",
+      "skill_prompt_hash": "sha256_mno345",
+      "sdk_available": false,
+      "variant_group": "cold_email",
+      "recurring_free_tier": true
+    },
+    {
+      "tool_id": "mcp_brave_search",
+      "name": "Brave Search MCP Server",
+      "type": "mcp",
+      "category": "search",
+      "task_types": [
+        "web_search",
+        "news_search",
+        "llm_context"
+      ],
+      "quality_scores": {
+        "accuracy": 0.9,
+        "success_rate": 0.98,
+        "avg_latency_ms": 350,
+        "reliability": 0.98
+      },
+      "cost": {
+        "model": "same_as_brave_api",
+        "free_tier": "$5 free monthly credits",
+        "paid_plans": "$5/1k queries",
+        "cost_per_call": 0.005,
+        "notes": "Thin MCP wrapper over Brave Search API. Adds tool-call interface for Claude/GPT agents."
+      },
+      "limits": {
+        "rate_limit_qps": 50,
+        "monthly_call_cap": null,
+        "concurrency_limit": null,
+        "data_freshness": "near-realtime"
+      },
+      "setup_complexity": "low",
+      "auth_required": true,
+      "auth_type": "api_key",
+      "best_for": "Claude/MCP-native agents needing web search; drop-in MCP tool; same quality as Brave API with agent-friendly interface",
+      "avoid_when": "Non-MCP agents (just use REST API); Answers endpoint rate limit still 2qps",
+      "failure_modes": [
+        "same as Brave API",
+        "MCP protocol overhead adds ~50ms"
+      ],
+      "data_source": "documented",
+      "last_verified": "2026-04",
+      "sdk_available": false,
+      "mcp_server_name": "@modelcontextprotocol/server-brave-search",
+      "recurring_free_tier": true
+    },
+    {
+      "tool_id": "mcp_filesystem",
+      "name": "Filesystem MCP Server",
+      "type": "mcp",
+      "category": "file_operations",
+      "task_types": [
+        "read_file",
+        "write_file",
+        "list_directory",
+        "search_files",
+        "file_management"
+      ],
+      "quality_scores": {
+        "accuracy": 0.99,
+        "success_rate": 0.99,
+        "avg_latency_ms": 5,
+        "reliability": 0.99
+      },
+      "cost": {
+        "model": "free",
+        "free_tier": "unlimited (local compute)",
+        "paid_plans": "none",
+        "cost_per_call": 0.0,
+        "notes": "Official Anthropic MCP server. Runs locally. Zero cost, near-zero latency for local disk"
+      },
+      "limits": {
+        "rate_limit_rpm": null,
+        "monthly_call_cap": null,
+        "concurrency_limit": "disk I/O bound",
+        "data_freshness": "realtime"
+      },
+      "setup_complexity": "low",
+      "auth_required": false,
+      "auth_type": "path_allowlist",
+      "best_for": "Any agent needing file access; zero cost; ultra-fast; official Anthropic support; sandboxed path allowlist for safety",
+      "avoid_when": "Cloud file systems; need cross-machine access; untrusted agent environments",
+      "failure_modes": [
+        "path traversal if misconfigured",
+        "no network file system support",
+        "permission errors on restricted paths"
+      ],
+      "data_source": "documented",
+      "last_verified": "2026-04",
+      "sdk_available": false,
+      "mcp_server_name": "@modelcontextprotocol/server-filesystem",
+      "recurring_free_tier": true
+    },
+    {
+      "tool_id": "mcp_github",
+      "name": "GitHub MCP Server",
+      "type": "mcp",
+      "category": "developer_tools",
+      "task_types": [
+        "repo_search",
+        "file_read",
+        "issue_management",
+        "pr_management",
+        "code_search"
+      ],
+      "quality_scores": {
+        "accuracy": 0.97,
+        "success_rate": 0.98,
+        "avg_latency_ms": 300,
+        "reliability": 0.98
+      },
+      "cost": {
+        "model": "free_with_github_account",
+        "free_tier": "5000 API requests/hour (GitHub rate limit)",
+        "paid_plans": "Enterprise GitHub gives higher limits",
+        "cost_per_call": 0.0,
+        "notes": "Requires GitHub personal access token. Free if GitHub account is free. 5k req/hour is plenty for most agent workflows"
+      },
+      "limits": {
+        "rate_limit_rph": 5000,
+        "monthly_call_cap": null,
+        "concurrency_limit": null,
+        "data_freshness": "realtime"
+      },
+      "setup_complexity": "low",
+      "auth_required": true,
+      "auth_type": "personal_access_token",
+      "best_for": "Developer agents needing code search, PR review, issue triage; 5k/hr is generous; official Anthropic MCP",
+      "avoid_when": "Non-developer tasks; private enterprise repos without PAT; code generation (use Claude Code instead)",
+      "failure_modes": [
+        "PAT scope misconfiguration",
+        "5k/hr limit with many concurrent agents",
+        "private repo access requires explicit scopes"
+      ],
+      "data_source": "documented",
+      "last_verified": "2026-04",
+      "sdk_available": false,
+      "mcp_server_name": "@modelcontextprotocol/server-github",
+      "recurring_free_tier": true
+    },
+    {
+      "tool_id": "wikipedia_api",
+      "name": "Wikipedia API",
+      "type": "api",
+      "category": "knowledge",
+      "task_types": [
+        "fact_lookup",
+        "entity_definition",
+        "historical_facts",
+        "summary_generation"
+      ],
+      "quality_scores": {
+        "accuracy": 0.85,
+        "success_rate": 0.97,
+        "avg_latency_ms": 120,
+        "reliability": 0.99
+      },
+      "cost": {
+        "model": "free",
+        "free_tier": "unlimited",
+        "paid_plans": "none",
+        "cost_per_call": 0.0,
+        "notes": "Completely free, no auth required. REST API and MediaWiki API both available. Requires attribution"
+      },
+      "limits": {
+        "rate_limit_rpm": 200,
+        "monthly_call_cap": null,
+        "concurrency_limit": null,
+        "data_freshness": "community-updated (hours to days lag for breaking news)"
+      },
+      "setup_complexity": "very_low",
+      "auth_required": false,
+      "auth_type": "none",
+      "best_for": "Zero-cost factual entity lookups; historical data; encyclopedic context; structured article summaries; no auth, no rate limit concern",
+      "avoid_when": "Real-time facts; financial data; primary source research; controversial topics (edit wars affect accuracy)",
+      "failure_modes": [
+        "vandalism/edit wars on contested topics",
+        "no realtime data",
+        "may be missing niche entities"
+      ],
+      "data_source": "community_measured",
+      "last_verified": "2026-04",
+      "sdk_available": false,
+      "recurring_free_tier": true
+    },
+    {
+      "tool_id": "arxiv_api",
+      "name": "arXiv API",
+      "type": "api",
+      "category": "knowledge",
+      "task_types": [
+        "paper_search",
+        "research_retrieval",
+        "citation_lookup",
+        "abstract_extraction"
+      ],
+      "quality_scores": {
+        "accuracy": 0.98,
+        "success_rate": 0.97,
+        "avg_latency_ms": 500,
+        "reliability": 0.97
+      },
+      "cost": {
+        "model": "free",
+        "free_tier": "unlimited (with rate limit courtesy)",
+        "paid_plans": "none",
+        "cost_per_call": 0.0,
+        "notes": "Free, no auth required. Returns XML/Atom. Rate limit is self-imposed courtesy (~3s between requests recommended)"
+      },
+      "limits": {
+        "rate_limit_rpm": 20,
+        "monthly_call_cap": null,
+        "concurrency_limit": null,
+        "data_freshness": "daily updates from arxiv submissions"
+      },
+      "setup_complexity": "very_low",
+      "auth_required": false,
+      "auth_type": "none",
+      "best_for": "Free academic paper search; AI/ML/physics/math/CS research; preprint retrieval; latest research agents; no auth",
+      "avoid_when": "Social science, humanities papers (not on arXiv); need full PDF text (API gives abstracts); commercial publishing journals",
+      "failure_modes": [
+        "Atom/XML response requires parsing",
+        "abstracts only (not full text)",
+        "subject bias towards STEM"
+      ],
+      "data_source": "community_measured",
+      "last_verified": "2026-04",
+      "sdk_available": false,
+      "recurring_free_tier": true
+    },
+    {
+      "tool_id": "numbers_api",
+      "name": "Numbers API",
+      "type": "api",
+      "category": "trivia",
+      "task_types": [
+        "number_trivia",
+        "date_facts",
+        "math_facts"
+      ],
+      "quality_scores": {
+        "accuracy": 0.8,
+        "success_rate": 0.0,
+        "avg_latency_ms": 100,
+        "reliability": 0.0
+      },
+      "cost": {
+        "model": "free",
+        "free_tier": "unlimited, no auth",
+        "paid_plans": "none",
+        "cost_per_call": 0.0,
+        "notes": "Niche novelty API. Free, no auth, ultra-fast. Returns trivia about numbers and dates"
+      },
+      "limits": {
+        "rate_limit_rpm": null,
+        "monthly_call_cap": null,
+        "concurrency_limit": null,
+        "data_freshness": "static"
+      },
+      "setup_complexity": "very_low",
+      "auth_required": false,
+      "auth_type": "none",
+      "best_for": "Agent demos; novelty use cases; date/number context enrichment; zero-cost testing API",
+      "avoid_when": "Any use \u2014 API returning HTTP 404 in all 4 consecutive eval runs (2026-04-08). Service appears defunct. Do not use until verified operational.",
+      "failure_modes": [
+        "HTTP 404 in all 4 measured eval runs \u2014 service likely defunct as of 2026-04",
+        "HTTP (non-HTTPS) blocked by many cloud sandbox environments",
+        "No SLA, no auth, no support"
+      ],
+      "data_source": "measured",
+      "last_verified": "2026-04",
+      "sdk_available": false,
+      "recurring_free_tier": false
+    },
+    {
+      "tool_id": "perplexity_sonar_api",
+      "name": "Perplexity Sonar API",
+      "type": "api",
+      "category": "search",
+      "task_types": [
+        "web_search",
+        "news_search",
+        "llm_context",
+        "research_synthesis",
+        "question_answering"
+      ],
+      "quality_scores": {
+        "accuracy": 0.92,
+        "success_rate": 0.97,
+        "avg_latency_ms": 2500,
+        "reliability": 0.96
+      },
+      "cost": {
+        "model": "pay_per_use",
+        "free_tier": "$5 API credits included with Pro subscription ($20/mo)",
+        "paid_plans": "Sonar: $1/M input tokens + $5/1k requests; Sonar Pro: $3/M input + $15/M output tokens + $6/1k requests",
+        "cost_per_call": 0.005,
+        "notes": "Returns LLM-synthesized answers with citations, not raw result lists. Higher cost but much higher quality for research tasks. Pro plan better for conversational/multi-turn."
+      },
+      "limits": {
+        "rate_limit_rpm": null,
+        "concurrency_limit": null,
+        "monthly_call_cap": null,
+        "data_freshness": "near-realtime, <1 day lag"
+      },
+      "setup_complexity": "low",
+      "auth_required": true,
+      "auth_type": "api_key",
+      "best_for": "LLM-synthesized search answers with citations; best quality for research-style queries where precision > speed; replaces full search + summarize pipeline in one call",
+      "avoid_when": "Need raw result URLs/snippets rather than synthesized answers; latency ~2.5s is too slow for realtime agents; cost is 5-10x higher than raw search APIs",
+      "failure_modes": [
+        "slow response for complex queries",
+        "synthesized answers may hallucinate on niche topics",
+        "rate limits not documented; may throttle under heavy load"
+      ],
+      "data_source": "documented",
+      "last_verified": "2026-04",
+      "sdk_available": true,
+      "sdk_languages": [
+        "python",
+        "javascript"
+      ],
+      "recurring_free_tier": true
+    },
+    {
+      "tool_id": "serpapi_com",
+      "name": "SerpApi.com (Multi-Engine SERP API)",
+      "type": "api",
+      "category": "search",
+      "task_types": [
+        "web_search",
+        "google_search",
+        "bing_search",
+        "youtube_search",
+        "maps_search",
+        "shopping_search",
+        "news_search",
+        "image_search"
+      ],
+      "quality_scores": {
+        "accuracy": 0.96,
+        "success_rate": 0.99,
+        "avg_latency_ms": 500,
+        "reliability": 0.99
+      },
+      "cost": {
+        "model": "subscription",
+        "free_tier": "250 searches/month (recurring)",
+        "paid_plans": "Starter $25/mo (1k searches, 200/hr), Developer $75/mo (5k, 1000/hr), Production $150/mo (15k, 3000/hr), Big Data $275/mo (30k, 6000/hr)",
+        "cost_per_call": 0.025,
+        "notes": "Only successful searches counted. Wraps Google, Bing, YouTube, and 10+ other engines. Includes legal shield."
+      },
+      "limits": {
+        "rate_limit_rpm": null,
+        "rate_limit_per_hour_free": 50,
+        "rate_limit_per_hour_paid": 200,
+        "concurrency_limit": null,
+        "monthly_call_cap": "250 free / 1k\u201330k paid",
+        "data_freshness": "realtime (live SERP)"
+      },
+      "setup_complexity": "very_low",
+      "auth_required": true,
+      "auth_type": "api_key",
+      "recurring_free_tier": true,
+      "best_for": "Multi-engine SERP access (Google+Bing+YouTube in one API); legal protection included; 250/mo free recurring; structured JSON SERP output for agents",
+      "avoid_when": "Need >50 queries/hour on free tier; high-volume use where $0.025/query is cost-prohibitive vs Serper.dev at $0.001/query",
+      "failure_modes": [
+        "rate limit (50/hr on free)",
+        "higher cost per query than Serper at scale",
+        "Google structure changes can affect parsing"
+      ],
+      "data_source": "documented",
+      "last_verified": "2026-04",
+      "sdk_available": true,
+      "sdk_languages": [
+        "python",
+        "ruby",
+        "javascript",
+        "java",
+        "go",
+        "rust"
+      ]
+    },
+    {
+      "tool_id": "oxylabs_scraper",
+      "name": "Oxylabs Web Scraper API",
+      "type": "api",
+      "category": "scraping",
+      "task_types": [
+        "web_scrape",
+        "ecommerce_scrape",
+        "serp_scrape",
+        "structured_extraction"
+      ],
+      "quality_scores": {
+        "accuracy": 0.92,
+        "success_rate": 0.95,
+        "avg_latency_ms": 3000,
+        "reliability": 0.93
+      },
+      "cost": {
+        "model": "subscription_plus_usage",
+        "free_tier": "Free trial (no duration specified)",
+        "paid_plans": "Starting $49/mo; $0.00025 per result (i.e. $0.25/1000 results)",
+        "cost_per_call": 0.00025,
+        "notes": "Best for high-scale enterprise scraping. Includes residential proxy rotation. Contact for volume discounts."
+      },
+      "limits": {
+        "rate_limit_rpm": null,
+        "concurrency_limit": null,
+        "monthly_call_cap": null,
+        "data_freshness": "realtime (live fetch)",
+        "rate_limit_note": "Limits depend on plan; contact account manager for specifics"
+      },
+      "setup_complexity": "medium",
+      "auth_required": true,
+      "auth_type": "username_password",
+      "recurring_free_tier": false,
+      "best_for": "Enterprise-scale scraping with residential proxy rotation; structured data extraction from e-commerce; anti-bot bypass built in",
+      "avoid_when": "Budget < $49/mo; simple scraping tasks better served by Jina Reader or Firecrawl at lower cost; setup complexity is high for quick prototypes",
+      "failure_modes": [
+        "higher latency (3s+ per request)",
+        "complex setup for first-time users",
+        "free trial limited; no clear recurring free tier"
+      ],
+      "data_source": "documented",
+      "last_verified": "2026-04",
+      "sdk_available": true,
+      "sdk_languages": [
+        "python",
+        "javascript",
+        "php"
+      ]
+    },
+    {
+      "tool_id": "fmp_api",
+      "name": "Financial Modeling Prep (FMP)",
+      "type": "api",
+      "category": "finance",
+      "task_types": [
+        "stock_price",
+        "stock_history",
+        "fundamental_data",
+        "financial_statements",
+        "earnings",
+        "valuation",
+        "indices"
+      ],
+      "quality_scores": {
+        "accuracy": 0.95,
+        "success_rate": 0.98,
+        "avg_latency_ms": 50,
+        "reliability": 0.97
+      },
+      "cost": {
+        "model": "subscription",
+        "free_tier": "250 calls/day",
+        "paid_plans": "Starter ~9/mo; various tiers up to enterprise",
+        "cost_per_call": 0.0,
+        "notes": "Excellent price-performance for fundamental data. 100+ endpoints. REST + WebSocket. Used by fintech teams and hedge funds."
+      },
+      "limits": {
+        "rate_limit_rpm": null,
+        "rate_limit_rpm_free": null,
+        "monthly_call_cap": "250/day free",
+        "concurrency_limit": null,
+        "data_freshness": "realtime (paid), some delay on free"
+      },
+      "setup_complexity": "low",
+      "auth_required": true,
+      "auth_type": "api_key",
+      "best_for": "Institutional-grade fundamental data at the lowest entry price (~9/mo); earnings transcripts, financial ratios, insider trades, valuation; <50ms latency; best value for fundamental analysis workflows",
+      "avoid_when": "Free tier 250/day is very limited for production; realtime options data is very expensive; less known than Polygon/Alpha Vantage for pure price feeds",
+      "failure_modes": [
+        "Free tier 250/day exhausted quickly in agent loops",
+        "Some endpoints require higher subscription tiers",
+        "Less community support than Polygon.io"
+      ],
+      "data_source": "documented",
+      "last_verified": "2026-04",
+      "sdk_available": true,
+      "sdk_languages": [
+        "python",
+        "javascript"
+      ],
+      "recurring_free_tier": true
+    },
+    {
+      "tool_id": "scrapingdog",
+      "name": "Scrapingdog",
+      "type": "api",
+      "category": "scraping",
+      "task_types": [
+        "web_scraping",
+        "google_search_scraping",
+        "amazon_scraping",
+        "structured_extraction",
+        "content_extraction"
+      ],
+      "quality_scores": {
+        "accuracy": 0.94,
+        "success_rate": 0.99,
+        "avg_latency_ms": 1500,
+        "reliability": 0.98
+      },
+      "cost": {
+        "model": "pay_per_use",
+        "free_tier": "1,000 free API calls on signup",
+        "paid_plans": "starts ~/bin/bash.0002/call; volume pricing to /bin/bash.000063/call at scale",
+        "cost_per_call": 0.0002,
+        "notes": "Best price-per-call at scale among major scraping APIs (/bin/bash.063/1k at high volume). Specialized scrapers for Google, Amazon, eBay return structured JSON. 100% success rate observed in independent benchmarks on all tested sites."
+      },
+      "limits": {
+        "rate_limit_rpm": null,
+        "concurrency_limit": null,
+        "monthly_call_cap": null,
+        "data_freshness": "on-demand"
+      },
+      "setup_complexity": "low",
+      "auth_required": true,
+      "auth_type": "api_key",
+      "best_for": "Cost-efficient at scale (lowest $/call among major providers); specialized Google/Amazon/eBay scrapers returning structured JSON; 100% success rate on benchmarks; 1k free credits on signup",
+      "avoid_when": "Need enterprise compliance (ISO/SOC2) \u2014 Bright Data is better; need 1500+ pre-built actors marketplace (Apify is better); no recurring free tier after initial 1k credits",
+      "failure_modes": [
+        "No recurring free tier (only 1k signup credits)",
+        "Less community support than Apify or Firecrawl",
+        "Some protected sites may still evade"
+      ],
+      "data_source": "documented",
+      "last_verified": "2026-04",
+      "sdk_available": false,
+      "recurring_free_tier": false
+    }
+  ]
+}

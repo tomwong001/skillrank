@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Universal Tool Recommender — AI Agent Tool Selection Demo</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #222535;
+    --border: #2e3147;
+    --accent: #6366f1;
+    --accent2: #8b5cf6;
+    --green: #10b981;
+    --yellow: #f59e0b;
+    --red: #ef4444;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --winner: #fbbf24;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; min-height: 100vh; }
+
+  header {
+    background: linear-gradient(135deg, #1a1d27 0%, #0f1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+  .logo span { color: var(--accent); }
+  .badge { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 0.72rem; color: var(--muted); }
+
+  .main { max-width: 1200px; margin: 0 auto; padding: 32px 20px; }
+
+  .hero { text-align: center; margin-bottom: 36px; }
+  .hero h1 { font-size: 2rem; font-weight: 800; margin-bottom: 8px; background: linear-gradient(135deg, #e2e8f0, #a5b4fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero p { color: var(--muted); font-size: 0.95rem; max-width: 600px; margin: 0 auto; }
+
+  /* Search bar */
+  .search-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+  .search-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+  .search-input-wrap { flex: 1; min-width: 240px; }
+  .search-input-wrap label { display: block; font-size: 0.78rem; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+  input[type="text"], select {
+    width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text); padding: 10px 14px; font-size: 0.9rem; outline: none;
+  }
+  input[type="text"]:focus, select:focus { border-color: var(--accent); }
+  .filters-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; align-items: center; }
+  .checkbox-wrap { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.82rem; color: var(--muted); background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; }
+  .checkbox-wrap:hover { border-color: var(--accent); color: var(--text); }
+  .checkbox-wrap input { accent-color: var(--accent); }
+  .btn {
+    background: var(--accent); color: white; border: none; border-radius: 8px;
+    padding: 10px 24px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: opacity 0.15s;
+  }
+  .btn:hover { opacity: 0.85; }
+
+  /* Quick tasks */
+  .quick-tasks { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .quick-tag {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 20px;
+    padding: 5px 14px; font-size: 0.78rem; cursor: pointer; color: var(--muted); transition: all 0.15s;
+  }
+  .quick-tag:hover { background: var(--accent); border-color: var(--accent); color: white; }
+
+  /* Results area */
+  #results { }
+
+  /* Tool cards */
+  .results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .results-title { font-size: 0.9rem; font-weight: 600; color: var(--muted); }
+
+  .tool-cards { display: grid; gap: 14px; grid-template-columns: 1fr; }
+
+  .tool-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px; transition: border-color 0.15s;
+    cursor: pointer; position: relative;
+  }
+  .tool-card:hover { border-color: var(--accent); }
+  .tool-card.winner { border-color: var(--winner); }
+  .winner-badge {
+    position: absolute; top: -10px; right: 16px;
+    background: var(--winner); color: #000; font-size: 0.68rem; font-weight: 700;
+    padding: 3px 10px; border-radius: 20px;
+  }
+
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+  .card-left { display: flex; align-items: center; gap: 10px; }
+  .rank-badge { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 700; color: var(--muted); flex-shrink: 0; }
+  .rank-badge.r1 { background: var(--winner); border-color: var(--winner); color: #000; }
+  .tool-name { font-size: 1rem; font-weight: 700; }
+  .type-badge {
+    font-size: 0.68rem; font-weight: 600; padding: 3px 8px; border-radius: 4px;
+    background: var(--surface2); color: var(--muted); border: 1px solid var(--border);
+  }
+  .type-api { color: #60a5fa; border-color: #1e3a5f; background: #0f1e2d; }
+  .type-skill { color: #a78bfa; border-color: #3b2d6b; background: #1a1030; }
+  .type-mcp { color: #34d399; border-color: #1a3d30; background: #0b1f19; }
+
+  .score-bar { display: flex; align-items: center; gap: 8px; }
+  .score-num { font-size: 1.4rem; font-weight: 800; }
+  .score-num.high { color: var(--green); }
+  .score-num.mid { color: var(--yellow); }
+  .score-num.low { color: var(--red); }
+
+  .card-desc { font-size: 0.82rem; color: var(--muted); margin-bottom: 12px; line-height: 1.5; }
+  .card-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
+  .metric-item { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; }
+  .metric-label { font-size: 0.68rem; color: var(--muted); margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .metric-value { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+
+  .avoid-warning { margin-top: 10px; background: #1c1408; border: 1px solid #3d2c09; border-radius: 6px; padding: 8px 12px; font-size: 0.78rem; color: #f59e0b; display: none; }
+  .tool-card.expanded .avoid-warning { display: block; }
+  .failure-modes { margin-top: 8px; display: none; }
+  .tool-card.expanded .failure-modes { display: block; }
+  .failure-tag { display: inline-block; background: #1c0f0f; border: 1px solid #3d1515; color: #fc8181; border-radius: 4px; font-size: 0.7rem; padding: 2px 8px; margin: 2px; }
+
+  /* Radar chart section */
+  .chart-section {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px; margin-top: 24px;
+  }
+  .section-title { font-size: 0.9rem; font-weight: 700; color: var(--text); margin-bottom: 16px; }
+  canvas { display: block; margin: 0 auto; }
+
+  /* Stock API table */
+  .table-section {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px; margin-top: 24px;
+  }
+  .table-controls { display: flex; gap: 10px; margin-bottom: 14px; align-items: center; flex-wrap: wrap; }
+  .table-controls label { font-size: 0.78rem; color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  th {
+    text-align: left; padding: 8px 12px; background: var(--bg); border-bottom: 1px solid var(--border);
+    color: var(--muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em;
+    cursor: pointer; user-select: none;
+  }
+  th:hover { color: var(--text); }
+  th.sorted-asc::after { content: " ↑"; }
+  th.sorted-desc::after { content: " ↓"; }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface2); }
+  .score-pill { display: inline-block; padding: 2px 8px; border-radius: 20px; font-weight: 700; font-size: 0.78rem; }
+  .score-high { background: #0c2d1e; color: #34d399; }
+  .score-mid { background: #2d2212; color: #f59e0b; }
+  .score-low { background: #2d1212; color: #f87171; }
+  .free-tag { background: #0c1f2d; color: #60a5fa; border-radius: 4px; padding: 1px 6px; font-size: 0.7rem; }
+
+  /* Skills comparison */
+  .skills-section {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px; margin-top: 24px;
+  }
+  .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .skill-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px; position: relative; }
+  .skill-card.winner-skill { border-color: var(--winner); }
+  .skill-name { font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; }
+  .skill-metrics { }
+  .skill-metric-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .skill-metric-label { font-size: 0.72rem; color: var(--muted); }
+  .skill-metric-val { font-size: 0.78rem; font-weight: 600; }
+  .mini-bar-wrap { height: 4px; background: var(--surface2); border-radius: 2px; margin-top: 3px; }
+  .mini-bar { height: 4px; border-radius: 2px; background: var(--accent); }
+  .skill-winner-tag { position: absolute; top: -8px; right: 8px; background: var(--winner); color: #000; font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+
+  .empty-state { text-align: center; padding: 48px; color: var(--muted); }
+  .empty-icon { font-size: 2rem; margin-bottom: 12px; }
+
+  @media (max-width: 600px) {
+    .main { padding: 16px 12px; }
+    .card-metrics { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Universal <span>Tool Recommender</span></div>
+  <div class="badge">AI Agent Tool Selection · v1.4 · 35 tools · Run 4</div>
+</header>
+
+<div class="main">
+  <div class="hero">
+    <h1>Pick the right tool. Every time.</h1>
+    <p>A scoring engine for AI agent orchestrators. Query by task, get ranked recommendations with pricing, rate limits, and failure modes.</p>
+  </div>
+
+  <!-- Search section -->
+  <div class="search-section">
+    <div class="search-row">
+      <div class="search-input-wrap" style="flex:2">
+        <label>Task Description</label>
+        <input type="text" id="taskInput" placeholder="e.g. get realtime stock price, search the web, write cold email" />
+      </div>
+      <div class="search-input-wrap" style="flex:0.6; min-width:140px">
+        <label>Optimize For</label>
+        <select id="optimizeSelect">
+          <option value="balanced">Balanced</option>
+          <option value="cost">Cost</option>
+          <option value="quality">Quality</option>
+          <option value="speed">Speed</option>
+        </select>
+      </div>
+      <div class="search-input-wrap" style="flex:0.4; min-width:100px">
+        <label>Tool Type</label>
+        <select id="typeFilter">
+          <option value="">All</option>
+          <option value="api">API</option>
+          <option value="skill">Skill</option>
+          <option value="mcp">MCP</option>
+        </select>
+      </div>
+      <button class="btn" onclick="runRecommend()">Recommend →</button>
+    </div>
+    <div class="filters-row">
+      <label class="checkbox-wrap"><input type="checkbox" id="freeOnly"> Free tier only</label>
+      <label class="checkbox-wrap"><input type="checkbox" id="recurringFree"> Recurring free tier</label>
+      <label class="checkbox-wrap"><input type="checkbox" id="noAuth"> No auth required</label>
+    </div>
+    <div class="quick-tasks">
+      <span class="quick-tag" onclick="quickSearch('get realtime stock price')">📈 Stock Price</span>
+      <span class="quick-tag" onclick="quickSearch('search the web')">🔍 Web Search</span>
+      <span class="quick-tag" onclick="quickSearch('get weather forecast')">🌤 Weather</span>
+      <span class="quick-tag" onclick="quickSearch('scrape web page')">🕷 Web Scraping</span>
+      <span class="quick-tag" onclick="quickSearch('write cold email')">✉️ Cold Email</span>
+      <span class="quick-tag" onclick="quickSearch('read file')">📁 File Access</span>
+      <span class="quick-tag" onclick="quickSearch('research paper')">📚 Research</span>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div id="results">
+    <div class="empty-state">
+      <div class="empty-icon">🤖</div>
+      <div>Enter a task above to get ranked tool recommendations</div>
+    </div>
+  </div>
+
+  <!-- Stock API comparison table -->
+  <div class="table-section">
+    <div class="section-title">📊 Stock API Comparison</div>
+    <div class="table-controls">
+      <label>Sort by:</label>
+      <select id="tableSort" onchange="renderStockTable(this.value)">
+        <option value="accuracy">Accuracy</option>
+        <option value="latency">Latency</option>
+        <option value="cost">Cost</option>
+        <option value="free_rpm">Free Rate Limit</option>
+      </select>
+    </div>
+    <div id="stockTableContainer"></div>
+  </div>
+
+  <!-- Cold email skills side-by-side -->
+  <div class="skills-section">
+    <div class="section-title">✉️ Cold Email Skill Variants — Side-by-Side</div>
+    <div id="skillsGrid"></div>
+  </div>
+</div>
+
+<script>
+// ─── Registry (embedded subset) ───────────────────────────────────────────
+const TOOLS = [
+  {id:"polygon_io",name:"Polygon.io",type:"api",cat:"finance",tasks:["stock_price","stock_history","options","forex","crypto"],accuracy:0.97,success:0.99,latency:85,reliability:0.995,cost_per_call:0,free_tier:"Unlimited delayed (15min)",best_for:"Realtime US equities; best latency+accuracy; WebSocket streaming",avoid:"Budget $0 + realtime required; free tier is delayed only",failures:["5rpm free tier","WebSocket reconnect on high volume"]},
+  {id:"alpha_vantage",name:"Alpha Vantage",type:"api",cat:"finance",tasks:["stock_price","stock_history","forex","crypto","technical_indicators"],accuracy:0.93,success:0.96,latency:320,reliability:0.96,cost_per_call:0,free_tier:"25 req/day",best_for:"Broad coverage: technicals, fundamentals, forex, crypto at low price",avoid:"Free tier 25/day is barely testable; high latency",failures:["High latency on free","5rpm hard cap free","Occasional stale data"]},
+  {id:"finnhub",name:"Finnhub",type:"api",cat:"finance",tasks:["stock_price","stock_history","news_sentiment","earnings"],accuracy:0.94,success:0.97,latency:150,reliability:0.97,cost_per_call:0,free_tier:"60 rpm (best free tier)",best_for:"Best free tier (60rpm realtime); WebSocket on free; strong news/sentiment",avoid:"Extensive fundamentals or ETF data — expensive add-ons",failures:["Rate limiting on non-US data","WebSocket drops occasionally"]},
+  {id:"twelve_data",name:"Twelve Data",type:"api",cat:"finance",tasks:["stock_price","stock_history","technical_indicators","forex","crypto"],accuracy:0.95,success:0.97,latency:120,reliability:0.97,cost_per_call:0,free_tier:"800 credits/day",best_for:"Best value for global equities + technicals; 70+ markets on Pro",avoid:"Credit system adds accounting complexity; 800/day barely production",failures:["Credit exhaustion mid-batch","WebSocket reconnect needed"]},
+  {id:"marketstack",name:"Marketstack",type:"api",cat:"finance",tasks:["stock_price","stock_history","eod_data"],accuracy:0.90,success:0.95,latency:400,reliability:0.94,cost_per_call:0.001,free_tier:"100 req/month",best_for:"Cheapest EOD data ($9.99/mo for 10k calls); 70+ exchanges",avoid:"100 req/mo free is almost unusable; high latency",failures:["Strict monthly cap","Slow response"]},
+  {id:"yahoo_finance_unofficial",name:"Yahoo Finance (yfinance)",type:"api",cat:"finance",tasks:["stock_price","stock_history","options","fundamental_data"],accuracy:0.88,success:0.82,latency:500,reliability:0.80,cost_per_call:0,free_tier:"Unlimited (unofficial)",best_for:"Zero-cost prototyping; broadest coverage at $0",avoid:"Production / SLA / TOS compliance / high concurrency",failures:["Breaks without notice","Anti-scraping blocks","ToS risk"]},
+  {id:"brave_search_api",name:"Brave Search API",type:"api",cat:"search",tasks:["web_search","news_search","llm_context"],accuracy:0.90,success:0.99,latency:300,reliability:0.99,cost_per_call:0.005,free_tier:"$5 free monthly credits",best_for:"Independent index; 50 QPS; LLM-optimized results",avoid:"Answers endpoint max 2qps; credit card required for signup",failures:["Answers rate limit very low","Freshness lag for breaking news"]},
+  {id:"tavily_search",name:"Tavily Search",type:"api",cat:"search",tasks:["web_search","research","llm_context"],accuracy:0.92,success:0.98,latency:1800,reliability:0.97,cost_per_call:0.008,free_tier:"1,000 credits/month (no CC)",best_for:"Purpose-built for AI agents; no CC for free tier; structured results",avoid:"High latency (1.8s); expensive at scale",failures:["High latency","Credits exhaust quickly at scale"]},
+  {id:"exa_search",name:"Exa Search",type:"api",cat:"search",tasks:["semantic_search","web_search","content_extraction"],accuracy:0.93,success:0.98,latency:900,reliability:0.97,cost_per_call:0.007,free_tier:"1,000 req/month",best_for:"Semantic/neural search; conceptually similar content; unique index",avoid:"Simple keyword queries (overkill); latency-sensitive tasks",failures:["Semantic mismatch for literal queries","Expensive at scale"]},
+  {id:"serper_api",name:"Serper.dev",type:"api",cat:"search",tasks:["web_search","news_search","image_search"],accuracy:0.95,success:0.99,latency:400,reliability:0.99,cost_per_call:0.001,free_tier:"2,500 (one-time)",best_for:"Google-quality results; best price/query at scale",avoid:"Privacy concerns; one-time (not recurring) free tier",failures:["Google algorithm dependency","No recurring free tier"]},
+  {id:"duckduckgo_instant_answers",name:"DuckDuckGo Instant",type:"api",cat:"search",tasks:["instant_answer","definition_lookup"],accuracy:0.75,success:0.95,latency:150,reliability:0.94,cost_per_call:0,free_tier:"Unlimited (no auth)",best_for:"Zero-cost factual lookups; no auth; fast; agent fallback",avoid:"Full web search; news; production with SLA",failures:["~30% empty results","No full SERP","Stale data"]},
+  {id:"openmeteo",name:"Open-Meteo",type:"api",cat:"weather",tasks:["current_weather","forecast","historical_weather","air_quality"],accuracy:0.91,success:0.98,latency:1000,reliability:0.97,cost_per_call:0,free_tier:"10,000 calls/day (non-commercial)",best_for:"Best free weather API for non-commercial; no auth; ensemble forecasts",avoid:"Commercial product; SLA required",failures:["No SLA on free","Commercial use ToS risk"]},
+  {id:"openweathermap",name:"OpenWeatherMap",type:"api",cat:"weather",tasks:["current_weather","forecast","historical_weather"],accuracy:0.88,success:0.97,latency:250,reliability:0.96,cost_per_call:0,free_tier:"1,000 calls/day (commercial OK)",best_for:"Best freemium; commercial-allowed free tier; wide SDK support",avoid:"Ensemble forecasts, marine, or air quality on free",failures:["60rpm cap on free","Historical data expensive"]},
+  {id:"weatherapi_com",name:"WeatherAPI.com",type:"api",cat:"weather",tasks:["current_weather","forecast","historical_weather"],accuracy:0.87,success:0.97,latency:200,reliability:0.95,cost_per_call:0,free_tier:"1M calls/month (most generous)",best_for:"Most generous free tier (1M/mo); lowest entry price $4/mo; hyperlocal",avoid:"Need ensemble modeling or high accuracy",failures:["Undocumented rate limits","No SLA on free"]},
+  {id:"tomorrow_io",name:"Tomorrow.io",type:"api",cat:"weather",tasks:["current_weather","forecast","nowcast","climate_risk"],accuracy:0.94,success:0.98,latency:180,reliability:0.98,cost_per_call:0,free_tier:"500 calls/day",best_for:"Highest accuracy; minute-level nowcasting; proprietary ML model",avoid:"Free tier 25 calls/hour very restrictive; expensive at scale",failures:["Very low rate limit on free","Pricing opaque for Business"]},
+  {id:"firecrawl",name:"Firecrawl",type:"api",cat:"scraping",tasks:["web_scraping","web_crawling","content_extraction","structured_extraction"],accuracy:0.93,success:0.94,latency:2500,reliability:0.93,cost_per_call:0.001,free_tier:"500 credits (one-time)",best_for:"JS-rendered sites; LLM structured extraction; clean markdown for RAG",avoid:"One-time free credits; slow (2.5s avg); low free concurrency",failures:["Some anti-bot sites still fail","High latency","No recurring free tier"]},
+  {id:"apify",name:"Apify",type:"api",cat:"scraping",tasks:["web_scraping","web_crawling","social_media_scraping"],accuracy:0.91,success:0.92,latency:5000,reliability:0.90,cost_per_call:null,free_tier:"$5 credits/month",best_for:"1500+ pre-built actors; complex workflows; social media data",avoid:"Simple static scraping (overkill); unpredictable CU billing",failures:["CU billing hard to predict","Slow cold start","Anti-bot inconsistent by actor"]},
+  {id:"brightdata",name:"Bright Data",type:"api",cat:"scraping",tasks:["web_scraping","residential_proxy","serp_scraping"],accuracy:0.95,success:0.97,latency:3000,reliability:0.97,cost_per_call:0.003,free_tier:"Trial on request",best_for:"Enterprise; heavily protected sites; best anti-bot resistance",avoid:"Budget <$500/mo; simple sites; ethical concerns",failures:["Very expensive","Complex setup","Residential proxy ethics"]},
+  {id:"jina_reader",name:"Jina AI Reader",type:"api",cat:"scraping",tasks:["content_extraction","webpage_to_markdown"],accuracy:0.88,success:0.91,latency:1800,reliability:0.90,cost_per_call:0,free_tier:"Unlimited (rate limited at 20rpm)",best_for:"Simplest extraction — prefix URL with r.jina.ai/; zero setup",avoid:"JS-heavy SPAs; high concurrency; rate limited at 20rpm",failures:["JS-heavy sites fail","20rpm on free","Anti-bot on some sites"]},
+  {id:"skill_cold_email_v1",name:"Cold Email — Sales Focus",type:"skill",cat:"email_writing",tasks:["write_cold_email","sales_outreach"],accuracy:0.85,success:0.90,latency:3000,reliability:1.0,cost_per_call:0.005,free_tier:"LLM tokens only",best_for:"B2B SaaS sales; AIDA structure; strong CTA; personalization hooks",avoid:"Recruiting; enterprise procurement; too aggressive for some verticals",failures:["Generic without personalization data","Too salesy for some industries"]},
+  {id:"skill_cold_email_v2",name:"Cold Email — Founder Outreach",type:"skill",cat:"email_writing",tasks:["write_cold_email","founder_networking"],accuracy:0.88,success:0.91,latency:3500,reliability:1.0,cost_per_call:0.006,free_tier:"LLM tokens only",best_for:"Investor outreach, co-founder search, partnerships; casual professional",avoid:"Mass campaigns; purely transactional B2B sales",failures:["Too conversational for enterprise","Vague CTA if context missing"]},
+  {id:"skill_cold_email_v3",name:"Cold Email — Recruiting",type:"skill",cat:"email_writing",tasks:["write_cold_email","recruiting_email"],accuracy:0.87,success:0.89,latency:2800,reliability:1.0,cost_per_call:0.005,free_tier:"LLM tokens only",best_for:"Recruiting passive candidates; roles with strong culture/mission; personalized",avoid:"B2B sales; investor outreach; generic without candidate profile",failures:["Generic without candidate data","Comp expectation mismatches"]},
+  {id:"skill_cold_email_v4",name:"Cold Email — Short/Minimal",type:"skill",cat:"email_writing",tasks:["write_cold_email","high_volume_outreach"],accuracy:0.82,success:0.86,latency:1500,reliability:1.0,cost_per_call:0.001,free_tier:"LLM tokens only",best_for:"High volume; best reply rate in A/B tests for >500 emails; mobile-first",avoid:"Complex enterprise sales; senior executive outreach",failures:["Lacks depth for complex value props","May feel abrupt to senior audience"]},
+  {id:"skill_cold_email_v5",name:"Cold Email — Research-Heavy",type:"skill",cat:"email_writing",tasks:["write_cold_email","hyper_personalized_email"],accuracy:0.93,success:0.88,latency:8000,reliability:1.0,cost_per_call:0.03,free_tier:"LLM tokens only",best_for:"ABM; strategic enterprise sales; when personalization is competitive advantage",avoid:"High volume (>100/day) due to cost; when speed matters",failures:["Expensive at scale","Slow (8s avg)","Search API dependency"]},
+  {id:"mcp_brave_search",name:"Brave Search MCP",type:"mcp",cat:"search",tasks:["web_search","news_search","llm_context"],accuracy:0.90,success:0.98,latency:350,reliability:0.98,cost_per_call:0.005,free_tier:"$5 free monthly",best_for:"Claude/MCP-native agents; drop-in MCP tool; same quality as Brave API",avoid:"Non-MCP agents (use REST API)",failures:["Same as Brave API","MCP overhead adds ~50ms"]},
+  {id:"mcp_filesystem",name:"Filesystem MCP",type:"mcp",cat:"file_operations",tasks:["read_file","write_file","list_directory","search_files"],accuracy:0.99,success:0.99,latency:5,reliability:0.99,cost_per_call:0,free_tier:"Unlimited (local)",best_for:"Any agent needing file access; zero cost; near-zero latency; path sandboxed",avoid:"Cloud file systems; cross-machine access",failures:["Path traversal if misconfigured","No network FS support"]},
+  {id:"mcp_github",name:"GitHub MCP",type:"mcp",cat:"developer_tools",tasks:["repo_search","file_read","issue_management","pr_management","code_search"],accuracy:0.97,success:0.98,latency:300,reliability:0.98,cost_per_call:0,free_tier:"5,000 req/hour",best_for:"Developer agents; code search, PR review, issue triage; 5k/hr generous",avoid:"Non-developer tasks; private repos without PAT",failures:["PAT scope misconfiguration","5k/hr limit with many concurrent agents"]},
+  {id:"wikipedia_api",name:"Wikipedia API",type:"api",cat:"knowledge",tasks:["fact_lookup","entity_definition","historical_facts"],accuracy:0.85,success:0.97,latency:120,reliability:0.99,cost_per_call:0,free_tier:"Unlimited (no auth)",best_for:"Zero-cost factual lookups; historical data; encyclopedic context; no auth",avoid:"Real-time facts; financial data; primary source research",failures:["Vandalism on contested topics","No realtime data"]},
+  {id:"arxiv_api",name:"arXiv API",type:"api",cat:"knowledge",tasks:["paper_search","research_retrieval","abstract_extraction"],accuracy:0.98,success:0.97,latency:500,reliability:0.97,cost_per_call:0,free_tier:"Unlimited (no auth)",best_for:"Free academic paper search; AI/ML/CS/physics; preprint retrieval; no auth",avoid:"Social science/humanities; need full text; commercial publishing",failures:["Abstract only (not full text)","XML parsing required"]},
+  {id:"numbers_api",name:"Numbers API",type:"api",cat:"trivia",tasks:["number_trivia","date_facts"],accuracy:0.80,success:0.96,latency:100,reliability:0.95,cost_per_call:0,free_tier:"Unlimited (no auth)",best_for:"Zero-cost demos; novelty; date/number context enrichment",avoid:"Production use; not suitable for serious applications",failures:["Limited accuracy","Static database","HTTP only"]}
+];
+
+// ─── Scoring ─────────────────────────────────────────────────────────────
+const WEIGHTS = {
+  balanced: {accuracy:0.25,success:0.25,reliability:0.20,latency:0.15,cost:0.10,setup:0.05},
+  cost:     {accuracy:0.15,success:0.15,reliability:0.10,latency:0.10,cost:0.40,setup:0.10},
+  quality:  {accuracy:0.35,success:0.30,reliability:0.25,latency:0.05,cost:0.03,setup:0.02},
+  speed:    {accuracy:0.15,success:0.20,reliability:0.15,latency:0.40,cost:0.05,setup:0.05},
+};
+
+function latencyScore(ms) {
+  if (!ms && ms !== 0) return 0.5;
+  return Math.max(0, 1 - ms / 10000);
+}
+
+function costScore(cpc) {
+  if (!cpc || cpc === 0) return 1.0;
+  return Math.max(0, 1 - (Math.log10(Math.max(cpc, 1e-6)) + 6) / 6);
+}
+
+function computeScore(tool, mode) {
+  const w = WEIGHTS[mode] || WEIGHTS.balanced;
+  return (
+    w.accuracy * (tool.accuracy || 0.5) +
+    w.success * (tool.success || 0.5) +
+    w.reliability * (tool.reliability || 0.5) +
+    w.latency * latencyScore(tool.latency) +
+    w.cost * costScore(tool.cost_per_call) +
+    w.setup * 0.8
+  );
+}
+
+// ─── Task relevance ────────────────────────────────────────────────────────
+const CAT_MAP = {
+  stock:['finance'], equity:['finance'], market:['finance'], options:['finance'], forex:['finance'], crypto:['finance'],
+  search:['search'], web:['search','scraping'], scrape:['scraping'], crawl:['scraping'], extract:['scraping'],
+  weather:['weather'], forecast:['weather'], temperature:['weather'],
+  email:['email_writing'], cold:['email_writing'], outreach:['email_writing'],
+  file:['file_operations'], read:['file_operations'], write:['file_operations'],
+  github:['developer_tools'], code:['developer_tools'],
+  research:['knowledge'], paper:['knowledge'], wikipedia:['knowledge'], arxiv:['knowledge'],
+};
+
+function inferCats(task) {
+  const words = task.toLowerCase().split(/\s+/);
+  const cats = new Set();
+  words.forEach(w => { if (CAT_MAP[w]) CAT_MAP[w].forEach(c => cats.add(c)); });
+  return [...cats];
+}
+
+function taskRelevance(tool, task) {
+  const cats = inferCats(task);
+  const tl = task.toLowerCase();
+  let score = 0;
+  if (cats.includes(tool.cat)) score += 30;
+  (tool.tasks || []).forEach(tt => {
+    const parts = tt.split('_');
+    if (parts.some(p => tl.includes(p))) score += 15;
+  });
+  return score;
+}
+
+function recommend(task, mode, typeFilter, freeOnly, noAuth, top=3) {
+  let candidates = TOOLS.map(t => ({...t, relevance: taskRelevance(t, task)}));
+
+  // Hard filter: must have some relevance
+  const withRelevance = candidates.filter(t => t.relevance > 0);
+  if (withRelevance.length > 0) candidates = withRelevance;
+
+  if (typeFilter) candidates = candidates.filter(t => t.type === typeFilter);
+  if (freeOnly) candidates = candidates.filter(t => t.free_tier && !t.free_tier.toLowerCase().includes('none'));
+  if (noAuth) candidates = candidates.filter(t => !t.accuracy || t.cost_per_call === 0);
+
+  candidates = candidates.map(t => ({...t, score: computeScore(t, mode)}));
+  candidates.sort((a,b) => b.score - a.score);
+  return candidates.slice(0, top);
+}
+
+// ─── Render results ────────────────────────────────────────────────────────
+function scoreColor(s) { return s > 0.85 ? 'high' : s > 0.70 ? 'mid' : 'low'; }
+
+function renderResults(results, task) {
+  if (!results.length) {
+    document.getElementById('results').innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><div>No tools matched. Try a different task or remove constraints.</div></div>`;
+    return;
+  }
+  const cards = results.map((t, i) => `
+    <div class="tool-card ${i===0?'winner':''}" onclick="toggleExpand(this)">
+      ${i===0 ? '<div class="winner-badge">⭐ TOP PICK</div>' : ''}
+      <div class="card-header">
+        <div class="card-left">
+          <div class="rank-badge ${i===0?'r1':''}">${i+1}</div>
+          <div>
+            <div class="tool-name">${t.name}</div>
+          </div>
+          <span class="type-badge type-${t.type}">${t.type.toUpperCase()}</span>
+        </div>
+        <div class="score-bar">
+          <div class="score-num ${scoreColor(t.score)}">${t.score.toFixed(3)}</div>
+        </div>
+      </div>
+      <div class="card-desc">${t.best_for}</div>
+      <div class="card-metrics">
+        <div class="metric-item"><div class="metric-label">Accuracy</div><div class="metric-value">${(t.accuracy*100).toFixed(0)}%</div></div>
+        <div class="metric-item"><div class="metric-label">Success Rate</div><div class="metric-value">${(t.success*100).toFixed(0)}%</div></div>
+        <div class="metric-item"><div class="metric-label">Avg Latency</div><div class="metric-value">${t.latency ? t.latency+'ms' : 'N/A'}</div></div>
+        <div class="metric-item"><div class="metric-label">Free Tier</div><div class="metric-value" style="font-size:0.75rem">${t.free_tier}</div></div>
+        <div class="metric-item"><div class="metric-label">Category</div><div class="metric-value">${t.cat}</div></div>
+        <div class="metric-item"><div class="metric-label">Cost/Call</div><div class="metric-value">${t.cost_per_call > 0 ? '$'+t.cost_per_call : 'Free'}</div></div>
+      </div>
+      <div class="avoid-warning">⚠️ Avoid when: ${t.avoid}</div>
+      <div class="failure-modes">${(t.failures||[]).map(f=>`<span class="failure-tag">${f}</span>`).join('')}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('results').innerHTML = `
+    <div class="results-header">
+      <div class="results-title">${results.length} recommendations for "<strong style="color:var(--text)">${task}</strong>"</div>
+      <div style="font-size:0.75rem;color:var(--muted)">Click card to expand failure modes</div>
+    </div>
+    <div class="tool-cards">${cards}</div>
+  `;
+}
+
+function toggleExpand(el) { el.classList.toggle('expanded'); }
+
+function runRecommend() {
+  const task = document.getElementById('taskInput').value.trim();
+  if (!task) return;
+  const mode = document.getElementById('optimizeSelect').value;
+  const type = document.getElementById('typeFilter').value;
+  const freeOnly = document.getElementById('freeOnly').checked;
+  const noAuth = document.getElementById('noAuth').checked;
+  const results = recommend(task, mode, type, freeOnly, noAuth, 5);
+  renderResults(results, task);
+}
+
+function quickSearch(task) {
+  document.getElementById('taskInput').value = task;
+  runRecommend();
+}
+
+// Enter key
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('taskInput').addEventListener('keydown', e => { if (e.key==='Enter') runRecommend(); });
+  renderStockTable('accuracy');
+  renderSkillsGrid();
+});
+
+// ─── Stock table ──────────────────────────────────────────────────────────
+const STOCK_TOOLS = TOOLS.filter(t => t.cat === 'finance');
+let tableSortDir = -1;
+
+function renderStockTable(sortKey) {
+  const sorted = [...STOCK_TOOLS].sort((a,b) => {
+    if (sortKey === 'accuracy') return b.accuracy - a.accuracy;
+    if (sortKey === 'latency') return a.latency - b.latency;
+    if (sortKey === 'cost') return a.cost_per_call - b.cost_per_call;
+    if (sortKey === 'free_rpm') {
+      // Finnhub = 60, Alpha Vantage = 5, Twelve Data = 8, Marketstack = 300 (rps), Polygon = 5 free
+      const rpms = {finnhub:60,alpha_vantage:5,twelve_data:8,marketstack:5,polygon_io:5,yahoo_finance_unofficial:100};
+      return (rpms[b.id]||0) - (rpms[a.id]||0);
+    }
+    return 0;
+  });
+
+  const scoreClass = s => s >= 0.95 ? 'score-high' : s >= 0.90 ? 'score-mid' : 'score-low';
+
+  const rows = sorted.map(t => `
+    <tr>
+      <td><strong>${t.name}</strong></td>
+      <td><span class="score-pill ${scoreClass(t.accuracy)}">${(t.accuracy*100).toFixed(0)}%</span></td>
+      <td><span class="score-pill ${scoreClass(t.reliability)}">${(t.reliability*100).toFixed(0)}%</span></td>
+      <td>${t.latency}ms</td>
+      <td><span class="free-tag">${t.free_tier}</span></td>
+      <td>${t.cost_per_call > 0 ? '$'+t.cost_per_call : '<span class="free-tag">$0</span>'}</td>
+    </tr>
+  `).join('');
+
+  document.getElementById('stockTableContainer').innerHTML = `
+    <table>
+      <thead><tr>
+        <th>API</th>
+        <th onclick="renderStockTable('accuracy')" class="${sortKey==='accuracy'?'sorted-desc':''}">Accuracy</th>
+        <th>Reliability</th>
+        <th onclick="renderStockTable('latency')" class="${sortKey==='latency'?'sorted-asc':''}">Latency</th>
+        <th onclick="renderStockTable('free_rpm')" class="${sortKey==='free_rpm'?'sorted-desc':''}">Free Tier</th>
+        <th onclick="renderStockTable('cost')" class="${sortKey==='cost'?'sorted-asc':''}">Cost/Call</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
+// ─── Skills grid ──────────────────────────────────────────────────────────
+const SKILL_EVALS = [
+  {id:"v1",name:"Sales Focus",quality:0.5995,cta:"strong+specific",words:95,cost:0.0048,efficiency:124.9,winner:false},
+  {id:"v2",name:"Founder Outreach",quality:0.5137,cta:"missing",words:66,cost:0.0055,efficiency:93.4,winner:false},
+  {id:"v3",name:"Recruiting",quality:0.6416,cta:"strong",words:76,cost:0.0045,efficiency:142.6,winner:false},
+  {id:"v4",name:"Short/Minimal",quality:0.5990,cta:"strong",words:21,cost:0.0009,efficiency:665.6,winner:false},
+  {id:"v5",name:"Research-Heavy",quality:0.6562,cta:"strong",words:68,cost:0.028,efficiency:23.4,winner:true},
+];
+
+function renderSkillsGrid() {
+  const maxQ = Math.max(...SKILL_EVALS.map(s=>s.quality));
+  const maxE = Math.max(...SKILL_EVALS.map(s=>s.efficiency));
+  const maxW = Math.max(...SKILL_EVALS.map(s=>s.words));
+
+  const cards = SKILL_EVALS.map(s => `
+    <div class="skill-card ${s.winner?'winner-skill':''}">
+      ${s.winner ? '<div class="skill-winner-tag">⭐ Best Quality</div>' : ''}
+      <div class="skill-name">${s.name}</div>
+      <div class="skill-metrics">
+        <div class="skill-metric-row"><span class="skill-metric-label">Quality Score</span><span class="skill-metric-val">${s.quality.toFixed(3)}</span></div>
+        <div class="mini-bar-wrap"><div class="mini-bar" style="width:${(s.quality/maxQ*100).toFixed(0)}%"></div></div>
+        <div class="skill-metric-row" style="margin-top:6px"><span class="skill-metric-label">CTA</span><span class="skill-metric-val" style="font-size:0.68rem">${s.cta}</span></div>
+        <div class="skill-metric-row"><span class="skill-metric-label">Word Count</span><span class="skill-metric-val">${s.words}</span></div>
+        <div class="mini-bar-wrap"><div class="mini-bar" style="width:${(s.words/maxW*100).toFixed(0)}%;background:#f59e0b"></div></div>
+        <div class="skill-metric-row" style="margin-top:6px"><span class="skill-metric-label">Cost/Email</span><span class="skill-metric-val">$${s.cost.toFixed(4)}</span></div>
+        <div class="skill-metric-row"><span class="skill-metric-label">Token Efficiency</span><span class="skill-metric-val">${s.efficiency.toFixed(1)}x</span></div>
+        <div class="mini-bar-wrap"><div class="mini-bar" style="width:${Math.min(s.efficiency/maxE*100,100).toFixed(0)}%;background:#34d399"></div></div>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('skillsGrid').innerHTML = `<div class="skills-grid">${cards}</div><p style="font-size:0.72rem;color:var(--muted);margin-top:12px">⚠️ LLM outputs mocked. Token efficiency = quality_score / cost_per_email.</p>`;
+}
+</script>
+</body>
+</html>
