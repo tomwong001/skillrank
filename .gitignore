@@ -3,6 +3,8 @@ __pycache__/
 *.pyo
 .env
 *.db
+*.db-shm
+*.db-wal
 .pytest_cache/
 .venv/
 venv/

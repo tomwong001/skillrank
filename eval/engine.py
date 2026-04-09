@@ -9,7 +9,10 @@ Checkpoint/resume on failure (idempotent).
 import asyncio
 import uuid
 import json
+import logging
 from typing import Optional
+
+logger = logging.getLogger(__name__)
 
 from api.database import (
     get_db, get_skills_by_intent, get_scenarios_by_intent,
@@ -126,8 +129,10 @@ async def run_full_eval(submission_id: str, repo_url: str, commit_sha: str,
                 if existing_result["status"] != "success":
                     # Existing skill failed: new skill wins by forfeit
                     comp_result = {"verdict": "A", "reason": "Opponent failed to execute"}
+                    logger.info(f"Forfeit win: {existing['id']} failed on {scenario['name']}")
                 else:
                     # Judge comparison
+                    logger.info(f"Judging: {skill_id} vs {existing['id']} on {scenario['name']}")
                     async with JUDGE_SEMAPHORE:
                         comp_result = await judge_comparison(
                             intent_desc=f"{intent}: {scenario.get('task', '')}",
@@ -143,6 +148,8 @@ async def run_full_eval(submission_id: str, repo_url: str, commit_sha: str,
                     winner_id = skill_id
                 elif comp_result["verdict"] == "B":
                     winner_id = existing["id"]
+
+                logger.info(f"Comparison result: {comp_result['verdict']} — {comp_result.get('reason', '')[:100]}")
 
                 await create_comparison(
                     db, comp_id, intent, scenario["id"],

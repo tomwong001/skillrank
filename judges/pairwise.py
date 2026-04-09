@@ -12,7 +12,10 @@ import random
 import asyncio
 import os
 import json
+import logging
 from typing import Optional
+
+logger = logging.getLogger(__name__)
 
 OPENROUTER_BASE = "https://openrouter.ai/api/v1"
 OPENROUTER_KEY = os.environ.get("OPENROUTER_API_KEY", "")
@@ -68,6 +71,8 @@ async def call_judge(intent_desc: str, scenario_desc: str,
         output_second=second_output[:4000],
     )
 
+    logger.info(f"Judge call: model={JUDGE_MODEL}, swap={swap_order}, key_set={bool(OPENROUTER_KEY)}")
+
     for attempt in range(MAX_RETRIES):
         try:
             async with httpx.AsyncClient(timeout=30.0) as client:
@@ -88,12 +93,14 @@ async def call_judge(intent_desc: str, scenario_desc: str,
                 resp.raise_for_status()
                 data = resp.json()
                 text = data["choices"][0]["message"]["content"].strip()
+                logger.info(f"Judge response (attempt {attempt+1}): {text[:200]}")
 
                 # Parse "A|reason" or "B|reason" or "TIE|reason"
                 verdict, reason = _parse_verdict(text, label_first, label_second, swap_order)
                 return {"verdict": verdict, "reason": reason, "swapped": swap_order, "raw": text}
 
         except (httpx.HTTPStatusError, httpx.TimeoutException, Exception) as e:
+            logger.error(f"Judge error (attempt {attempt+1}/{MAX_RETRIES}): {type(e).__name__}: {e}")
             if attempt < MAX_RETRIES - 1:
                 await asyncio.sleep(RETRY_DELAY * (attempt + 1))
             else:

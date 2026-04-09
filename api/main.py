@@ -16,8 +16,11 @@ Dashboard (HTML):
 import os
 import uuid
 import json
+import logging
 import httpx
 from contextlib import asynccontextmanager
+
+logging.basicConfig(level=logging.INFO)
 
 from fastapi import FastAPI, BackgroundTasks, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
