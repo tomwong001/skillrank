@@ -1,0 +1,15 @@
+{
+  "id": "ship_code_01",
+  "intent": "ship_code",
+  "name": "Python monorepo bug fix",
+  "description": "Solo developer on a Python monorepo. Branch has a 1-commit bug fix with tests passing. Need to ship it: create PR, ensure tests pass, update changelog.",
+  "repo_url": "https://github.com/skillrank/eval-scenario-python-bugfix",
+  "branch": "fix/null-pointer-handler",
+  "task": "Ship this bug fix to production. Create a PR against main, make sure tests pass, and update the changelog with a meaningful entry.",
+  "expected_outcomes": [
+    "PR created against main branch",
+    "Tests executed and passing",
+    "Changelog updated with bug fix description",
+    "Commit message is descriptive"
+  ]
+}

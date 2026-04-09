@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkillRank — Submit a Skill</title>
+<link rel="preconnect" href="https://api.fontshare.com">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0F1117;--s1:#161926;--s2:#1E2235;--s3:#282D44;--tp:#E8E8F0;--ts:#9295AD;--tm:#5D6080;--ac:#22D3EE;--ac2:#818CF8;--ad:rgba(34,211,238,.10);--ag:rgba(34,211,238,.30);--ok:#34D399;--warn:#FBBF24;--err:#F87171;--bdr:#2A2E45;--r-sm:4px;--r-md:8px;--r-lg:12px;--fd:'Satoshi',system-ui,sans-serif;--fb:'Geist',system-ui,sans-serif;--fm:'Geist Mono','SF Mono',monospace}
+[data-theme=light]{--bg:#F5F5F7;--s1:#FFF;--s2:#F0F0F3;--s3:#E5E5EA;--tp:#1A1A2E;--ts:#6B6B80;--tm:#9999AA;--ac:#0891B2;--ac2:#6366F1;--ad:rgba(8,145,178,.08);--ag:rgba(8,145,178,.15);--bdr:#D5D5DD}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--tp);font-family:var(--fb);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 40% 30%,rgba(129,140,248,.06) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 70% 70%,rgba(34,211,238,.05) 0%,transparent 60%);pointer-events:none;z-index:0;animation:bgS 20s ease-in-out infinite alternate}
+@keyframes bgS{0%{opacity:1;transform:translate(0,0)}50%{opacity:.7;transform:translate(-20px,10px) scale(1.05)}100%{opacity:1;transform:translate(10px,-15px)}}
+body::after{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.03) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;z-index:0}
+.wrap{max-width:600px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+nav{background:rgba(22,25,38,.80);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--bdr);padding:8px 0;position:sticky;top:0;z-index:100}
+nav .inner{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--fd);font-weight:700;font-size:20px;color:var(--tp);letter-spacing:-.02em;text-decoration:none}
+.logo span{color:var(--ac)}
+.nav-links{display:flex;gap:24px;align-items:center}
+.nav-links a{color:var(--ts);text-decoration:none;font-size:13px;font-weight:500;transition:color .15s}
+.nav-links a:hover,.nav-links a.active{color:var(--tp)}
+.tbtn{background:var(--s2);border:1px solid var(--bdr);color:var(--ts);padding:6px 10px;border-radius:var(--r-sm);cursor:pointer;font-size:12px;font-family:var(--fm)}
+
+h1{font-family:var(--fd);font-weight:700;font-size:32px;letter-spacing:-.03em;margin:48px 0 8px}
+.sub{color:var(--ts);margin-bottom:32px}
+
+.card{background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r-md);padding:32px;box-shadow:0 4px 24px rgba(0,0,0,.2);transition:border-color .2s,box-shadow .2s}
+.card:hover{border-color:rgba(129,140,248,.3);box-shadow:0 4px 32px rgba(129,140,248,.08),0 4px 24px rgba(0,0,0,.2)}
+.fg{margin-bottom:20px}
+label{display:block;font-size:12px;font-weight:500;color:var(--ts);margin-bottom:4px}
+input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--bdr);color:var(--tp);padding:10px 12px;border-radius:var(--r-sm);font-size:13px;font-family:var(--fb);transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 2px var(--ad)}
+.mono{font-family:var(--fm)}
+.hint{font-size:11px;color:var(--tm);margin-top:4px}
+.btn{padding:10px 24px;border-radius:var(--r-sm);font-size:14px;font-weight:500;font-family:var(--fb);cursor:pointer;border:1px solid transparent;transition:all .15s;width:100%}
+.btn-p{background:var(--ac);color:#0F1117;border-color:var(--ac)}
+.btn-p:hover{filter:brightness(1.1)}
+.btn-p:disabled{opacity:.5;cursor:not-allowed}
+
+/* Terminal-style eval progress */
+.term{background:#0D0D12;border:1px solid var(--bdr);border-radius:var(--r-md);overflow:hidden;margin-top:24px;display:none}
+.term-bar{background:var(--s2);padding:6px 16px;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--bdr)}
+.dot{width:10px;height:10px;border-radius:50%}
+.dot-r{background:#F87171}.dot-y{background:#FBBF24}.dot-g{background:#34D399}
+.term-title{font-family:var(--fm);font-size:11px;color:var(--tm);margin-left:8px}
+.term-body{padding:16px;font-family:var(--fm);font-size:12px;line-height:1.8;color:var(--ts);max-height:300px;overflow-y:auto}
+.term-body .ok{color:var(--ok)}.term-body .ac{color:var(--ac)}.term-body .wr{color:var(--warn)}.term-body .dm{color:var(--tm)}
+.cursor{display:inline-block;width:8px;height:14px;background:var(--ac);animation:blink 1s step-end infinite;vertical-align:middle;margin-left:2px}
+@keyframes blink{50%{opacity:0}}
+
+.result{margin-top:24px;display:none}
+.result a{color:var(--ac);text-decoration:none}
+.result a:hover{text-decoration:underline}
+
+.foot{padding:48px 0;text-align:center;color:var(--tm);font-size:12px;font-family:var(--fm)}
+</style>
+</head>
+<body>
+<nav><div class="inner">
+  <a href="/" class="logo">Skill<span>Rank</span></a>
+  <div class="nav-links">
+    <a href="/">Leaderboard</a>
+    <a href="/submit" class="active">Submit</a>
+    <a href="/api/health">API</a>
+    <button class="tbtn" onclick="document.documentElement.dataset.theme=document.documentElement.dataset.theme==='dark'?'light':'dark'">&#9684; theme</button>
+  </div>
+</div></nav>
+
+<div class="wrap">
+  <h1>Submit a Skill</h1>
+  <p class="sub">Submit your AI skill for evaluation. We'll rank it against the field using pairwise A/B comparison.</p>
+
+  <div class="card" id="form-card">
+    <form id="submit-form" onsubmit="submitSkill(event)">
+      <div class="fg">
+        <label>GitHub Repository URL</label>
+        <input id="repo" class="mono" placeholder="https://github.com/you/your-skill" required>
+        <div class="hint">Must contain a SKILL.md file at the root</div>
+      </div>
+      <div class="fg">
+        <label>Intent</label>
+        <select id="intent">
+          <option value="ship_code">ship_code</option>
+        </select>
+        <div class="hint">What task does this skill accomplish?</div>
+      </div>
+      <div class="fg">
+        <label>Description</label>
+        <textarea id="desc" rows="3" placeholder="Brief description of what your skill does and how it works..."></textarea>
+      </div>
+      <div class="fg">
+        <label>GitHub Personal Access Token</label>
+        <input id="pat" type="password" class="mono" placeholder="ghp_..." required>
+        <div class="hint">Used to verify repo ownership. Not stored after verification.</div>
+      </div>
+      <button type="submit" class="btn btn-p" id="submit-btn">Submit for Evaluation</button>
+    </form>
+  </div>
+
+  <div class="term" id="terminal">
+    <div class="term-bar">
+      <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+      <span class="term-title" id="term-title">skillrank eval</span>
+    </div>
+    <div class="term-body" id="term-body"></div>
+  </div>
+
+  <div class="result" id="result"></div>
+</div>
+
+<div class="foot">SkillRank v0.1.0</div>
+
+<script>
+const API = window.location.origin;
+let pollInterval = null;
+
+function log(msg, cls='') {
+  const body = document.getElementById('term-body');
+  const line = document.createElement('div');
+  if (cls) line.className = cls;
+  line.textContent = msg;
+  body.appendChild(line);
+  body.scrollTop = body.scrollHeight;
+}
+
+function logHtml(html) {
+  const body = document.getElementById('term-body');
+  const line = document.createElement('div');
+  line.innerHTML = html;
+  body.appendChild(line);
+  body.scrollTop = body.scrollHeight;
+}
+
+async function submitSkill(e) {
+  e.preventDefault();
+  const btn = document.getElementById('submit-btn');
+  const term = document.getElementById('terminal');
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
+  term.style.display = 'block';
+
+  const repo = document.getElementById('repo').value;
+  const intent = document.getElementById('intent').value;
+  const desc = document.getElementById('desc').value;
+  const pat = document.getElementById('pat').value;
+
+  document.getElementById('term-title').textContent = `skillrank eval — ${repo.split('/').pop()}`;
+  log(`$ skillrank submit --repo ${repo} --intent ${intent}`, 'dm');
+
+  try {
+    const resp = await fetch(`${API}/api/submit`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({repo_url: repo, intent, description: desc, github_pat: pat}),
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json();
+      logHtml(`<span class="wr">ERROR:</span> ${err.detail || JSON.stringify(err)}`);
+      btn.disabled = false;
+      btn.textContent = 'Submit for Evaluation';
+      return;
+    }
+
+    const data = await resp.json();
+    logHtml(`<span class="ok">✓</span> Submission accepted: <span class="ac">${data.submission_id}</span>`);
+    logHtml(`<span class="ok">✓</span> ${data.message}`);
+    log('Evaluating...');
+
+    // Poll for status
+    pollInterval = setInterval(() => pollStatus(data.submission_id), 3000);
+
+  } catch (err) {
+    logHtml(`<span class="wr">ERROR:</span> ${err.message}`);
+    btn.disabled = false;
+    btn.textContent = 'Submit for Evaluation';
+  }
+}
+
+async function pollStatus(subId) {
+  try {
+    const resp = await fetch(`${API}/api/submit/${subId}`);
+    const data = await resp.json();
+
+    if (data.status === 'complete') {
+      clearInterval(pollInterval);
+      logHtml(`<span class="ok">✓</span> Evaluation complete!`);
+      showResult(data);
+    } else if (data.status === 'error') {
+      clearInterval(pollInterval);
+      logHtml(`<span class="wr">ERROR:</span> ${data.error || 'Unknown error'}`);
+      document.getElementById('submit-btn').disabled = false;
+      document.getElementById('submit-btn').textContent = 'Submit for Evaluation';
+    }
+    // else still evaluating, keep polling
+  } catch (e) {
+    // network error, keep trying
+  }
+}
+
+function showResult(data) {
+  const el = document.getElementById('result');
+  el.style.display = 'block';
+  const sc = data.scorecard;
+  if (sc) {
+    logHtml(`Rating: <span class="ac">${sc.rating.rating}</span> ± ${sc.rating.confidence_95}`);
+    logHtml(`Win rate: <span class="ok">${(sc.rating.win_rate * 100).toFixed(1)}%</span>`);
+    if (sc.strengths.length) logHtml(`<span class="ok">Strengths:</span> ${sc.strengths[0]}`);
+    if (sc.weaknesses.length) logHtml(`<span class="wr">Weaknesses:</span> ${sc.weaknesses[0]}`);
+    el.innerHTML = `<p style="color:var(--ok)">Evaluation complete.</p><p><a href="/skill/${sc.skill_id}">View full scorecard →</a> | <a href="/">View leaderboard →</a></p>`;
+  }
+}
+</script>
+</body>
+</html>

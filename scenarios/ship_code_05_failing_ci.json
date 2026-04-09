@@ -1,0 +1,15 @@
+{
+  "id": "ship_code_05",
+  "intent": "ship_code",
+  "name": "Failing CI needs fix before ship",
+  "description": "Branch has a good feature but CI is failing due to a linting error. Need to fix the lint issue, verify tests pass, then ship.",
+  "repo_url": "https://github.com/skillrank/eval-scenario-failing-ci",
+  "branch": "feat/api-rate-limiter",
+  "task": "Ship this feature. CI is currently failing due to a linting error. Fix the lint issue, make sure all tests and checks pass, then create the PR.",
+  "expected_outcomes": [
+    "Linting error identified and fixed",
+    "Tests pass after fix",
+    "Fix is in a separate commit from the feature",
+    "PR created with passing CI status"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "id": "ship_code_02",
+  "intent": "ship_code",
+  "name": "TypeScript new feature",
+  "description": "Team of 3 on a TypeScript package. Branch adds a new exported function with no tests written yet. Need to ship: create PR with description, note missing tests.",
+  "repo_url": "https://github.com/skillrank/eval-scenario-ts-feature",
+  "branch": "feat/add-retry-logic",
+  "task": "Ship this new feature. Create a PR with a clear description. Note that tests are missing and should be added before merge. Update the version if appropriate.",
+  "expected_outcomes": [
+    "PR created with descriptive title and body",
+    "Missing tests acknowledged in PR description",
+    "No version bump (feature, not fix)",
+    "Clean commit history"
+  ]
+}

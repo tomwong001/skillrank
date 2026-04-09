@@ -1,0 +1,15 @@
+{
+  "id": "ship_code_03",
+  "intent": "ship_code",
+  "name": "Documentation update",
+  "description": "Solo developer on a Python single-file project. Branch updates README and adds a usage example. Simple ship, no code changes.",
+  "repo_url": "https://github.com/skillrank/eval-scenario-docs-update",
+  "branch": "docs/add-usage-example",
+  "task": "Ship this documentation update. Create a PR. This is docs-only, so no tests needed and no version bump.",
+  "expected_outcomes": [
+    "PR created with clear title indicating docs change",
+    "No unnecessary test runs triggered",
+    "No version bump",
+    "PR body explains what was added to docs"
+  ]
+}
