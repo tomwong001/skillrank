@@ -115,12 +115,30 @@ async def _migrate_v2(db: aiosqlite.Connection):
     v2 migration: add skill_path, skill_md_content, source columns.
     Purge ship_code legacy data.
     Idempotent via PRAGMA user_version.
+
+    Order matters because of FK constraints:
+      1. Disable FK enforcement for the migration
+      2. Delete child rows (submissions, comparisons, eval_runs, scenarios) for ship_code
+      3. Rebuild skills table (drop + rename)
+      4. Add skill_path to submissions
+      5. Re-enable FKs + bump user_version
     """
     cursor = await db.execute("PRAGMA user_version")
     row = await cursor.fetchone()
     current_version = row[0] if row else 0
     if current_version >= 2:
         return
+
+    # Disable FK enforcement for the duration of the rebuild. SQLite keeps this
+    # setting per-connection, so it applies to every statement until re-enabled.
+    await db.execute("PRAGMA foreign_keys = OFF")
+
+    # Purge ship_code from dependent tables FIRST so the rebuild doesn't leave
+    # orphaned FK references afterward.
+    await db.execute("DELETE FROM eval_runs WHERE scenario_id LIKE 'ship_code_%'")
+    await db.execute("DELETE FROM comparisons WHERE intent = 'ship_code'")
+    await db.execute("DELETE FROM submissions WHERE intent = 'ship_code'")
+    await db.execute("DELETE FROM scenarios WHERE intent = 'ship_code'")
 
     # Rebuild skills table with new columns and updated unique constraint
     await db.executescript("""
@@ -163,23 +181,17 @@ async def _migrate_v2(db: aiosqlite.Connection):
         ALTER TABLE skills_v2 RENAME TO skills;
     """)
 
-    # Purge ship_code from related tables
-    await db.execute("DELETE FROM submissions WHERE intent = 'ship_code'")
-    await db.execute("DELETE FROM comparisons WHERE intent = 'ship_code'")
-    await db.execute("DELETE FROM scenarios WHERE intent = 'ship_code'")
-    await db.execute(
-        "DELETE FROM eval_runs WHERE scenario_id LIKE 'ship_code_%'"
-    )
-
-    # Add skill_path to submissions table (ALTER is fine here — no unique constraint change)
+    # Add skill_path to submissions table (ALTER ok — no unique constraint change)
     try:
         await db.execute(
             "ALTER TABLE submissions ADD COLUMN skill_path TEXT NOT NULL DEFAULT ''"
         )
     except Exception:
-        pass  # Column may already exist if migration re-ran partially
+        pass  # Column may already exist
 
     await db.execute("PRAGMA user_version = 2")
+    # Re-enable FK enforcement for normal operation
+    await db.execute("PRAGMA foreign_keys = ON")
     await db.commit()
 
 
