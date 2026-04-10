@@ -1,0 +1,17 @@
+{
+  "id": "web_scraping_01",
+  "intent": "web_scraping",
+  "name": "Scrape product prices from 50 competitor sites daily",
+  "description": "An e-commerce company wants to monitor competitor pricing daily for 500 SKUs across 50 competitor sites. Some sites load via JS (React/Next.js), some have Cloudflare bot protection, some require login. Need a reliable scheduled scraper that stores results in a database.",
+  "repo_url": "internal/price-monitor",
+  "branch": "feat/scraper-v1",
+  "task": "Build a system to scrape product prices from 50 competitor e-commerce sites, daily. Complications: (1) some sites are JS-rendered (need headless browser), (2) some have Cloudflare bot detection, (3) some have rate limits, (4) data needs to be normalized across sites (currency, availability, price format). Provide: (1) architecture overview, (2) which tool(s) to use and why, (3) how to handle bot detection without abuse, (4) how to structure the scraped data, (5) how to handle site changes that break parsers, (6) sample code for one specific site. Do not include any advice that bypasses access controls or ToS.",
+  "expected_outcomes": [
+    "Names specific scraping tool(s) with rationale",
+    "Handles JS-rendered pages explicitly",
+    "Addresses bot detection without bypassing auth/paywalls",
+    "Proposes normalized schema for scraped data",
+    "Suggests change-detection/alerting for broken parsers",
+    "Provides actual parsing code for one example site"
+  ]
+}

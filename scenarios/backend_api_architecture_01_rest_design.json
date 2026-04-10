@@ -1,0 +1,18 @@
+{
+  "id": "backend_api_architecture_01",
+  "intent": "backend_api_architecture",
+  "name": "Design REST API for a task management SaaS",
+  "description": "Building a task management API. Resources: workspaces, projects, tasks, comments, users. Users can belong to multiple workspaces with different roles. Tasks have subtasks, assignees, due dates, status, priority, attachments, comments.",
+  "repo_url": "internal/taskmgmt-api",
+  "branch": "feat/api-v1",
+  "task": "Design a RESTful API for a task management SaaS. Deliver: (1) complete endpoint list with HTTP methods and URIs, (2) request/response JSON schema for 3 key endpoints (create task, list tasks with filters, update task status), (3) authentication and authorization approach, (4) pagination strategy, (5) error response format, (6) versioning strategy, (7) rate limiting. Use production-grade REST conventions. Don't invent new terminology — follow established patterns.",
+  "expected_outcomes": [
+    "Proper resource nesting (e.g. /workspaces/:id/projects/:id/tasks)",
+    "HTTP methods used correctly (POST create, PATCH partial update, DELETE)",
+    "Pagination uses cursor or offset with explicit reasoning",
+    "Authentication strategy (Bearer token, API key, etc.) with rationale",
+    "Error format matches RFC 7807 or similar standard",
+    "Filtering/sorting on list endpoints",
+    "Versioning approach (URL vs header)"
+  ]
+}

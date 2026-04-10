@@ -1,0 +1,17 @@
+{
+  "id": "content_generation_02",
+  "intent": "content_generation",
+  "name": "Write a 2000-word technical blog post from research notes",
+  "description": "An engineering team spent 3 weeks migrating from MongoDB to Postgres. They have rough notes: the reasons (query complexity, cost), the pain points (dual-write period, data reconciliation), the wins (50% cost reduction, simpler joins), and 3 gotchas they wish they'd known. They want a polished public-facing blog post.",
+  "repo_url": "internal/engineering-blog",
+  "branch": "feat/mongo-to-postgres-post",
+  "task": "Write a 2000-word technical blog post titled 'How we migrated from MongoDB to Postgres without downtime'. Source material (raw notes from the team):\n\n- Reasons: join queries became painful, MongoDB was 3x more expensive at our scale, aggregation pipelines were hard to maintain\n- Strategy: dual-write period for 2 weeks, then backfill with a Python script, then cut over\n- Pain points: handling unique constraints that MongoDB allowed as dupes, restructuring embedded docs into separate tables, reconciling timestamps across timezones\n- Wins: 50% cost drop, 80% less code in aggregation layer, better tooling\n- Gotchas: (1) sequence ID wraparound we didn't plan for, (2) pg_bouncer session mode vs transaction mode, (3) VACUUM disruption during backfill\n\nProduce a ready-to-publish post. Real voice (first-person team perspective), concrete code examples for at least one gotcha, clear structure, actionable lessons for readers, no filler. Target audience: senior backend engineers.",
+  "expected_outcomes": [
+    "Clear structure: motivation, approach, challenges, results, lessons",
+    "First-person team voice, not generic",
+    "Concrete code example for at least one gotcha",
+    "Uses the real stats (50% cost, 80% code reduction)",
+    "All 3 gotchas surfaced with actionable lessons",
+    "Approximately 2000 words, no padding"
+  ]
+}

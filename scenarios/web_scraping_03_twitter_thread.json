@@ -1,0 +1,17 @@
+{
+  "id": "web_scraping_03",
+  "intent": "web_scraping",
+  "name": "Extract a Twitter/X thread with images into markdown",
+  "description": "Given a URL to a Twitter/X thread with 15 tweets and several embedded images, extract the full thread text + image URLs into a single markdown file. Twitter/X aggressively rate-limits unauthenticated scrapers and the page is JS-rendered.",
+  "repo_url": "internal/thread-archiver",
+  "branch": "feat/x-thread-grab",
+  "task": "Given a URL like https://x.com/someuser/status/1234567890 that starts a 15-tweet thread, produce a markdown file containing: (1) the full text of every tweet in the thread in order, (2) URLs to every embedded image, (3) author name and timestamp of the first tweet, (4) total engagement numbers if visible. Challenges: Twitter/X is JS-rendered, aggressively rate-limits, and thread continuations are loaded on scroll. Give me: (1) the tool and strategy, (2) concrete command to run, (3) how to handle pagination through the thread, (4) expected output format. Do not suggest anything that violates Twitter/X ToS.",
+  "expected_outcomes": [
+    "Names specific tool appropriate for JS-rendered sites",
+    "Concrete command with URL",
+    "Handles thread pagination / scroll loading",
+    "Output format specified (markdown structure)",
+    "Image URL extraction addressed",
+    "Acknowledges rate limits"
+  ]
+}

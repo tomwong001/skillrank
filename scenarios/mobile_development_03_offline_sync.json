@@ -1,0 +1,17 @@
+{
+  "id": "mobile_development_03",
+  "intent": "mobile_development",
+  "name": "Offline-first note-taking app with conflict resolution",
+  "description": "A note-taking React Native app needs to work offline. Users create and edit notes on their phone, then sync to the server when connection returns. Sometimes users edit the same note on 2 devices while offline — we need basic conflict resolution.",
+  "repo_url": "internal/notes-mobile",
+  "branch": "feat/offline-sync",
+  "task": "Build offline-first sync for a React Native note-taking app. Requirements: (1) create/edit/delete notes work offline, (2) sync to server when online, (3) handle 2-device concurrent edit (user edits same note on phone and tablet while both offline, then both come online), (4) conflict resolution should not lose data silently (LWW is NOT OK), (5) efficient sync (don't re-upload everything), (6) UX shows sync status to the user. Give me: (1) local storage choice (SQLite, WatermelonDB, PowerSync, etc.) with rationale, (2) schema with sync metadata (version, updated_at, client_id), (3) sync protocol (push/pull, diff strategy), (4) conflict resolution approach (3-way merge, CRDT, user-prompt), (5) sample code for the sync loop.",
+  "expected_outcomes": [
+    "Names specific local-storage library with rationale",
+    "Schema includes sync metadata (version or vector clock)",
+    "Push/pull protocol explicitly described",
+    "Conflict resolution that preserves both versions",
+    "UI feedback for sync state (pending, syncing, synced, error)",
+    "Runnable sync loop code"
+  ]
+}

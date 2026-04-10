@@ -1,0 +1,17 @@
+{
+  "id": "mobile_development_02",
+  "intent": "mobile_development",
+  "name": "Implement push notifications for iOS + Android in Expo",
+  "description": "An Expo managed React Native app needs push notifications working on both iOS and Android. Currently: no push setup at all. Backend is Node.js. Users should get notifications when someone replies to their post or follows them. Need it to work in dev and production, handle permission gracefully, and deep-link to the relevant screen when tapped.",
+  "repo_url": "internal/social-mobile",
+  "branch": "feat/push-notifications",
+  "task": "Add push notifications to an Expo (managed) React Native app. Requirements: (1) works on iOS and Android, dev and prod, (2) handles permission request UX gracefully (don't spam, explain why), (3) tapping a notification deep-links to the specific post/profile, (4) backend (Node.js) can send targeted notifications, (5) handles foreground vs background differently, (6) stores device tokens per user. Give me: (1) the Expo libraries to use, (2) the permission flow code, (3) token registration and backend sync, (4) deep-linking config, (5) backend code to send a notification, (6) testing instructions.",
+  "expected_outcomes": [
+    "Uses expo-notifications with explicit rationale",
+    "Permission flow that's not pushy (explain first, ask after)",
+    "Device token registration with backend sync",
+    "Deep-linking via URL schemes or universal links",
+    "Backend code using Expo Push API or APNs/FCM directly",
+    "Testing steps for dev and prod"
+  ]
+}

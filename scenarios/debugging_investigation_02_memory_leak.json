@@ -1,0 +1,17 @@
+{
+  "id": "debugging_investigation_02",
+  "intent": "debugging_investigation",
+  "name": "Node.js service memory climbs until OOM after 6 hours",
+  "description": "A Node.js service processes webhook events from a queue. RSS memory grows from 200MB at start to 1.8GB over 6 hours, then OOMs. Restart fixes it temporarily. No obvious leak in code review. The team has tried increasing --max-old-space-size which only delays the OOM.",
+  "repo_url": "internal/webhook-processor",
+  "branch": "main",
+  "task": "A long-running Node.js 20 service memory-leaks. RSS climbs from 200MB to 1.8GB over 6 hours processing webhook events, then OOMs. `--max-old-space-size` only delays it. Heap snapshot shows no obvious culprit in app code. Walk me through the systematic investigation: (1) what tools to use (heap profiler, clinic.js, node --inspect, etc.), (2) what specifically to look for, (3) how to distinguish heap leak from external (C++ addon / buffers), (4) common Node.js leak patterns that match the symptoms, (5) how to verify the fix. Don't just list 'things to check' — walk through a decision tree.",
+  "expected_outcomes": [
+    "Distinguishes V8 heap from RSS (external memory)",
+    "Recommends specific tools (clinic.js heapprofiler, 0x, etc.)",
+    "Covers classic Node leaks: event listeners, timers, closures, async_hooks",
+    "Addresses Buffer or ArrayBuffer retention outside V8",
+    "Plan to reproduce faster (compressed time)",
+    "Verification that the fix actually worked"
+  ]
+}

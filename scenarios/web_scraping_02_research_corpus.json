@@ -1,0 +1,17 @@
+{
+  "id": "web_scraping_02",
+  "intent": "web_scraping",
+  "name": "Build a clean markdown corpus from 200 blog URLs",
+  "description": "A research team has 200 URLs to blog posts and articles (mix of Substack, Medium, personal blogs, and company engineering blogs). They want each converted to clean markdown with preserved structure (headings, code blocks, quotes), for training a model on a specific domain.",
+  "repo_url": "internal/research-corpus",
+  "branch": "feat/url-to-markdown",
+  "task": "Convert 200 diverse blog/article URLs to clean markdown files. The output must preserve: headings, code blocks (with language hints), blockquotes, lists, tables, and inline links. Should strip: navigation, ads, cookie banners, comment sections, 'related articles' boxes. Handle common blog platforms: Substack, Medium (which blocks most scrapers), personal WordPress/Hugo/Astro sites, and corporate engineering blogs. Tell me: (1) the approach and main tool, (2) how to handle Medium specifically, (3) how to keep code blocks intact, (4) how to validate output quality, (5) concrete commands or code.",
+  "expected_outcomes": [
+    "Specific tool named (firecrawl, defuddle, trafilatura, etc.)",
+    "Handles Medium's anti-scraping specifically",
+    "Preserves code block fences and language hints",
+    "Strips noise (nav, ads, comments) explicitly",
+    "Quality validation approach",
+    "Concrete runnable commands"
+  ]
+}

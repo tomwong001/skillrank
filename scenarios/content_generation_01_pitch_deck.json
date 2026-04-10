@@ -1,0 +1,17 @@
+{
+  "id": "content_generation_01",
+  "intent": "content_generation",
+  "name": "10-slide pitch deck for a Series A fundraise",
+  "description": "A startup founder wants a 10-slide pitch deck for a Series A raise. Product: AI-powered customer support for small e-commerce. Metrics: $2M ARR, 20% MoM growth, 200 customers, 80 NPS, burn $200K/month. Raising $8M at $40M pre.",
+  "repo_url": "internal/fundraise",
+  "branch": "main",
+  "task": "Generate a complete 10-slide Series A pitch deck for an AI customer support SaaS. Stats: $2M ARR, 20% MoM growth, 200 customers, 80 NPS, burning $200K/month, raising $8M at $40M pre. Produce: (1) the slide order with titles, (2) full content for each slide (not just bullet-point placeholders — real narrative copy), (3) key visuals or chart types per slide, (4) one sentence on what the founder should emphasize verbally per slide. Follow standard Series A deck structure (problem, solution, traction, market, competition, business model, team, ask). Make the copy compelling and specific, not generic.",
+  "expected_outcomes": [
+    "10 slides covering the standard Series A topics",
+    "Real specific copy, not placeholder 'your value prop here'",
+    "Uses the given metrics effectively",
+    "Market sizing and competitive positioning",
+    "Clear ask slide with use of funds",
+    "Founder-verbal guidance that's practical"
+  ]
+}

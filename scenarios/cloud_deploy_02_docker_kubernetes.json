@@ -1,0 +1,17 @@
+{
+  "id": "cloud_deploy_02",
+  "intent": "cloud_deploy",
+  "name": "Containerize a Python API for Kubernetes",
+  "description": "A FastAPI backend that currently runs on a single EC2 instance needs to move to Kubernetes for horizontal scaling. Includes Postgres, Redis cache, and a background worker.",
+  "repo_url": "internal/api-backend",
+  "branch": "feat/k8s-migration",
+  "task": "Containerize a FastAPI backend and deploy it to Kubernetes. The app has: uvicorn API server, Celery background worker, Redis, Postgres. Produce: (1) a multi-stage Dockerfile optimized for production, (2) Kubernetes manifests for Deployment, Service, HPA, ConfigMap, Secret, (3) a health check endpoint setup, (4) a rollout strategy (max surge/unavailable), (5) resource requests and limits. Show the actual YAML and Dockerfile.",
+  "expected_outcomes": [
+    "Multi-stage Dockerfile with non-root user",
+    "Deployment YAML with resource limits",
+    "Horizontal Pod Autoscaler config",
+    "Liveness and readiness probes",
+    "Separate worker Deployment",
+    "Secrets and ConfigMap handling"
+  ]
+}

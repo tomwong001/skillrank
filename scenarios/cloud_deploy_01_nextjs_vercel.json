@@ -1,0 +1,17 @@
+{
+  "id": "cloud_deploy_01",
+  "intent": "cloud_deploy",
+  "name": "Ship a Next.js SaaS app to production",
+  "description": "B2B SaaS with Next.js 15 App Router, Postgres (Neon), and Stripe integration. Need to deploy to production with environment variable management, database migrations, preview deploys for PRs, and a rollback plan.",
+  "repo_url": "internal/saas-app",
+  "branch": "main",
+  "task": "Deploy a Next.js 15 SaaS app to production. Requirements: (1) production domain with HTTPS, (2) env vars for DB_URL, STRIPE_SECRET_KEY, NEXTAUTH_SECRET, (3) preview deploys per PR, (4) automated DB migrations on deploy, (5) fast rollback if production breaks, (6) edge caching for static assets. Walk through the exact CLI commands, configuration files, and what goes where. Include specific provider config examples.",
+  "expected_outcomes": [
+    "Names a specific deployment target with reasoning",
+    "Shows concrete CLI commands or config files",
+    "Handles environment variable management",
+    "Covers preview/branch deployments",
+    "Addresses database migration order",
+    "Provides rollback strategy"
+  ]
+}

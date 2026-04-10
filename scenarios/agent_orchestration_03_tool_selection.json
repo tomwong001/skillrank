@@ -1,0 +1,17 @@
+{
+  "id": "agent_orchestration_03",
+  "intent": "agent_orchestration",
+  "name": "Design a router agent that picks the right sub-skill",
+  "description": "You're building an 'internal helper' agent for a company. It has access to 12 specialized sub-skills (code-review, database-query-optimizer, deployment-helper, debug-guide, write-docs, etc.). The main agent receives a user question and must route to the right sub-skill, sometimes calling multiple. Currently the main agent calls the wrong sub-skill or calls everything 'just in case'.",
+  "repo_url": "internal/helper-agent",
+  "branch": "feat/better-routing",
+  "task": "Improve an agent router that picks which sub-skill to call for incoming user queries. Current problems: (1) often picks the wrong sub-skill, (2) calls multiple sub-skills 'just in case' wasting tokens, (3) fails silently when none of the sub-skills fit. Design the fix: (1) the routing prompt or mechanism (LLM-based, rules, hybrid), (2) how to decide between 'one skill', 'multiple in sequence', 'multiple in parallel', 'no match — ask user', (3) how the router signals 'not confident, ask for clarification', (4) how to measure routing quality without ground truth, (5) a specific example of a query that should map to 2 sub-skills and why.",
+  "expected_outcomes": [
+    "Explicit routing mechanism with reasoning",
+    "Decision logic for sequential vs parallel vs 'ask user'",
+    "Confidence signal when router is unsure",
+    "Evaluation strategy without labeled data",
+    "Concrete worked example",
+    "Discusses the 'call everything just in case' anti-pattern"
+  ]
+}

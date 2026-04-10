@@ -1,0 +1,17 @@
+{
+  "id": "agent_orchestration_02",
+  "intent": "agent_orchestration",
+  "name": "Multi-hour refactor that exceeds agent context window",
+  "description": "User asks to refactor a 150-file legacy Ruby on Rails codebase to extract a billing module into a standalone service. This can't fit in one agent's context. Needs planning, chunking, checkpointing, and verification at each stage.",
+  "repo_url": "internal/rails-monolith",
+  "branch": "refactor/billing-extraction",
+  "task": "A user says: 'Extract the billing module out of our 150-file Rails monolith into a standalone service.' This is too big for one context window. Design the agent orchestration: (1) the phase breakdown (planning, extraction, testing, integration), (2) how to maintain state across phases when context gets compacted, (3) the checkpoint/resume format, (4) how to verify each phase before moving on, (5) how to handle a sub-task that discovers it needs to edit more than its assigned files, (6) how to know when to stop and ask the user a question vs forge ahead. Provide the orchestration protocol, not the actual Rails code.",
+  "expected_outcomes": [
+    "Explicit phase breakdown with gates between phases",
+    "State persistence approach (file-based checkpoint, task list, etc.)",
+    "Verification step for each phase (tests pass, grep shows no stray references)",
+    "Sub-task escalation protocol when scope creeps",
+    "Clear criteria for when to ask the user",
+    "Handles context compaction across long sessions"
+  ]
+}

@@ -256,7 +256,15 @@ async def list_skills(intent: str):
 
 INTENT_DESCRIPTIONS = {
     "react_component_design": "Building React/UI components with modern tooling (shadcn, Tailwind, TypeScript)",
-    "ui_polish": "Polishing UI quality — alignment, spacing, performance, edge cases, design system consistency",
+    "ui_polish": "Polishing UI quality — alignment, spacing, hierarchy, design system consistency",
+    "cloud_deploy": "Shipping apps to cloud providers — Vercel, Azure, Expo, custom CI/CD pipelines",
+    "database_design": "Database schema design, queries, migrations — Postgres, Convex, serverless DBs",
+    "backend_api_architecture": "API design, architecture patterns, auth, backend integration",
+    "web_scraping": "Fetching and parsing web content into structured data — scrapers, browser automation",
+    "debugging_investigation": "Root cause analysis, systematic debugging, reproducing bugs, testing",
+    "content_generation": "Creating images, slides, videos, blog posts, presentation decks",
+    "mobile_development": "React Native, Expo, iOS/Android patterns, responsive mobile layouts",
+    "agent_orchestration": "Multi-agent workflows, sub-agent dispatch, long-running task coordination",
 }
 
 

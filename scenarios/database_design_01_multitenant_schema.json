@@ -1,0 +1,17 @@
+{
+  "id": "database_design_01",
+  "intent": "database_design",
+  "name": "Multi-tenant SaaS schema design",
+  "description": "B2B SaaS with multiple tenant companies. Each tenant has users, projects, documents. Need strong isolation so tenant A can never see tenant B's data, but minimize ops cost — cannot create a new DB per tenant. Using Postgres.",
+  "repo_url": "internal/saas-backend",
+  "branch": "feat/multitenant",
+  "task": "Design the database schema for a multi-tenant SaaS in Postgres. Requirements: (1) strict tenant isolation — tenant A can NEVER see tenant B's rows, (2) shared DB cluster (not per-tenant DBs), (3) users belong to one tenant, each with a role (admin/member), (4) projects belong to tenants, documents belong to projects, (5) support for tenant-specific settings, (6) efficient queries on tenant-scoped data. Provide: the DDL for tables, any indexes, RLS policies if using row-level security, and a sample query showing how the app ensures tenant isolation.",
+  "expected_outcomes": [
+    "Explicit tenant_id column on every tenant-scoped table",
+    "Proper foreign key relationships with ON DELETE behavior",
+    "Index strategy that includes tenant_id first for query performance",
+    "Row-level security policies (or equivalent app-layer enforcement)",
+    "Sample SELECT showing tenant_id filter or SET role",
+    "Handles role-based access within a tenant"
+  ]
+}

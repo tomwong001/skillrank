@@ -1,0 +1,17 @@
+{
+  "id": "backend_api_architecture_03",
+  "intent": "backend_api_architecture",
+  "name": "Make webhooks reliable when downstream is flaky",
+  "description": "Stripe sends payment webhooks to our API. Our downstream services (email, analytics, CRM) sometimes fail or time out. We've been losing payment state updates when downstream errors cascade.",
+  "repo_url": "internal/webhook-handler",
+  "branch": "feat/reliable-webhooks",
+  "task": "Design a reliable webhook processing system. Stripe webhooks come in at ~200/min. For each webhook we need to: (1) update our DB, (2) send a confirmation email via SendGrid, (3) track in analytics (Segment), (4) sync to CRM (HubSpot). Any of 2-4 can fail or time out. Currently we're losing state. Requirements: (1) never lose a webhook, (2) respond to Stripe within 3s, (3) retry failed downstream calls with backoff, (4) visibility into failures, (5) exactly-once DB update. Give me the architecture + key code patterns.",
+  "expected_outcomes": [
+    "Separates webhook receipt from downstream fan-out (queue pattern)",
+    "Synchronous DB write before 200 response",
+    "Idempotency key handling to prevent double processing",
+    "Dead letter queue for downstream failures",
+    "Exponential backoff with jitter",
+    "Observability: trace IDs, metrics, alerting"
+  ]
+}

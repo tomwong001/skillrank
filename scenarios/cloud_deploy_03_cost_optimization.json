@@ -1,0 +1,17 @@
+{
+  "id": "cloud_deploy_03",
+  "intent": "cloud_deploy",
+  "name": "Cut cloud bill by 50% without breaking the app",
+  "description": "Startup's AWS bill has climbed to $8K/month. Breakdown: $3K EC2 (mostly idle m5.xlarge instances), $2K RDS (over-provisioned Postgres), $1.5K CloudFront egress, $1K S3, $0.5K misc. The team is 5 engineers, so engineering time is expensive. Need to cut bill to $4K/month.",
+  "repo_url": "internal/ops-cost-review",
+  "branch": "main",
+  "task": "Audit the $8K/month cloud spend and propose concrete changes to reach $4K/month without major downtime. For each recommendation provide: (1) current cost, (2) proposed change, (3) expected savings, (4) implementation steps, (5) risk level. Include the exact CLI commands or Terraform changes. Prioritize by savings-to-effort ratio. The team values engineer time over cloud savings at <$200/month.",
+  "expected_outcomes": [
+    "Identifies biggest cost drivers with savings estimates",
+    "Proposes concrete instance right-sizing or reserved capacity",
+    "Addresses RDS over-provisioning specifically",
+    "Covers S3 lifecycle / intelligent tiering",
+    "Calls out CloudFront egress or caching fixes",
+    "Ranks by savings-to-effort ratio"
+  ]
+}

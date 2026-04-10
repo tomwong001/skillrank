@@ -1,0 +1,17 @@
+{
+  "id": "database_design_03",
+  "intent": "database_design",
+  "name": "Zero-downtime migration: rename a hot column",
+  "description": "A production Postgres table `users` has 40M rows and 500 writes/sec. Need to rename column `email` to `email_address` and also change its type from VARCHAR(255) to TEXT. The app currently reads/writes `users.email` in many places.",
+  "repo_url": "internal/auth-service",
+  "branch": "feat/rename-email-col",
+  "task": "Execute a zero-downtime column rename + type change on a hot Postgres table (40M rows, 500 writes/sec). Old: `users.email VARCHAR(255)`. New: `users.email_address TEXT`. Provide the full migration plan as a numbered sequence of safe steps, with the exact SQL for each step. Include: (1) how to avoid locking the table, (2) how to keep old and new columns in sync during rollout, (3) how to ship the app code change without breakage, (4) how to back out if something goes wrong, (5) approximate timing for each phase.",
+  "expected_outcomes": [
+    "Multi-step migration (not a single ALTER TABLE)",
+    "Adds new column first, backfills in batches, syncs via trigger",
+    "Considers lock_timeout and statement_timeout",
+    "Covers app-code compatibility during dual-write window",
+    "Provides rollback procedure",
+    "Timing estimates per phase"
+  ]
+}

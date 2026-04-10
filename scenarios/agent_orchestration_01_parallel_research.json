@@ -1,0 +1,17 @@
+{
+  "id": "agent_orchestration_01",
+  "intent": "agent_orchestration",
+  "name": "Parallel research across 5 topics then synthesize",
+  "description": "The user asks: 'Compare 5 vector databases (Pinecone, Weaviate, Qdrant, Chroma, pgvector) on performance, cost, ease of use, ecosystem, and enterprise features.' The main agent needs to dispatch parallel sub-agents to research each DB, then synthesize.",
+  "repo_url": "internal/research-agent",
+  "branch": "main",
+  "task": "User asks: 'Compare 5 vector databases (Pinecone, Weaviate, Qdrant, Chroma, pgvector) on performance, cost, ease of use, ecosystem, and enterprise features.' Design the agent orchestration: (1) how to decompose the task, (2) what each sub-agent should receive as input (prompt template), (3) how to prevent sub-agents from duplicating work or going out of scope, (4) how to aggregate results into a final comparison table, (5) how to handle partial failures (one sub-agent times out), (6) when NOT to parallelize. Provide the actual orchestration code pattern and the prompts you'd send to sub-agents.",
+  "expected_outcomes": [
+    "Clear decomposition strategy (per-DB vs per-dimension)",
+    "Sub-agent prompt template with explicit scope limits",
+    "Aggregation logic into comparison table",
+    "Partial-failure handling with graceful degradation",
+    "Discusses when parallelization is wrong",
+    "Concrete orchestration code"
+  ]
+}

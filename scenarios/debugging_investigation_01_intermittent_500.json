@@ -1,0 +1,17 @@
+{
+  "id": "debugging_investigation_01",
+  "intent": "debugging_investigation",
+  "name": "Intermittent 500 errors on checkout — reproduces 5% of the time",
+  "description": "Production is throwing 500 errors on the checkout endpoint roughly 5% of the time. It doesn't repro locally. Error logs show `sqlalchemy.exc.OperationalError: (psycopg2.errors.SerializationFailure)` but only sometimes. CEO is asking for a fix by EOD.",
+  "repo_url": "internal/checkout-api",
+  "branch": "main",
+  "task": "Production /api/checkout is 500'ing on ~5% of requests. Error log snippet:\n\n```\n[ERROR] POST /api/checkout 500\nsqlalchemy.exc.OperationalError: (psycopg2.errors.SerializationFailure)\ncould not serialize access due to concurrent update\n```\n\nThe endpoint: reads inventory, creates an order, decrements inventory, creates payment intent. All in one SQLAlchemy session. You can't reproduce locally. Give me: (1) your top 3 hypotheses in priority order, (2) how to verify each one (specific SQL queries, logs, or code to add), (3) the most likely root cause with reasoning, (4) the fix, (5) how to prevent a recurrence. Don't guess — walk me through the reasoning.",
+  "expected_outcomes": [
+    "Identifies serialization failure as a classic transaction isolation issue",
+    "Walks through hypotheses with falsifiable checks",
+    "Names the isolation level involved (SERIALIZABLE or REPEATABLE READ)",
+    "Suggests retry-on-SerializationFailure as fix",
+    "Addresses root cause (concurrent updates on same row)",
+    "Prevention: row-level locking, advisory locks, or queue serialization"
+  ]
+}

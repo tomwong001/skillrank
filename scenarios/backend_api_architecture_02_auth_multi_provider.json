@@ -1,0 +1,17 @@
+{
+  "id": "backend_api_architecture_02",
+  "intent": "backend_api_architecture",
+  "name": "Add Google + GitHub OAuth to existing email/password auth",
+  "description": "A Node.js/Express app currently uses email + password auth (bcrypt + JWT stored in httpOnly cookies). Need to add 'Sign in with Google' and 'Sign in with GitHub'. Users must be able to link multiple providers to the same account.",
+  "repo_url": "internal/api-backend",
+  "branch": "feat/oauth",
+  "task": "Add Google and GitHub OAuth to an existing email/password auth system. Existing state: bcrypt passwords, JWT in httpOnly cookies. Requirements: (1) user can sign up with any provider, (2) existing users can link additional providers to one account, (3) email matching across providers auto-links if same email, (4) secure state handling to prevent CSRF on OAuth callback, (5) token refresh handling. Provide: DB schema changes, the callback handler code, key libraries to use, and the account-linking logic.",
+  "expected_outcomes": [
+    "DB schema: separate oauth_accounts table keyed on (provider, provider_user_id)",
+    "CSRF-safe state parameter handling on OAuth callback",
+    "Clear account-linking logic for same-email case",
+    "Named specific OAuth library (passport, auth.js, lucia, etc.)",
+    "Cookie vs session strategy consistent with existing JWT",
+    "Handles provider-side errors and user-denied consent"
+  ]
+}

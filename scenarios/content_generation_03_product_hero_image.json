@@ -1,0 +1,17 @@
+{
+  "id": "content_generation_03",
+  "intent": "content_generation",
+  "name": "Generate a product hero image for a SaaS landing page",
+  "description": "A B2B SaaS selling AI-powered meeting notes needs a hero image for their landing page. Design requirements: shows the product in context (laptop on desk), modern clean aesthetic, no stock-photo feel, complementary to a dark navy/cyan brand palette.",
+  "repo_url": "internal/marketing-assets",
+  "branch": "main",
+  "task": "Generate a hero image concept for a B2B SaaS landing page. Product: AI meeting notes (auto-transcribes and summarizes meetings). Requirements: (1) shows the product (a laptop with the app UI visible) in a realistic workspace, (2) modern minimal aesthetic — not stock-photo corporate, (3) visual style matches a dark navy/cyan brand palette, (4) composition works at 1920x1080 with room for headline text on the left, (5) not AI-slop generic (no weird hands, no obvious AI tells). Deliver: (1) the exact image generation prompt I should use, (2) which tool/model to use (DALL-E, Midjourney, Flux, etc.), (3) 3 alternative composition ideas, (4) how to iterate if the first output is off. Do not output an actual image — output the prompt and process.",
+  "expected_outcomes": [
+    "Specific image-gen tool named with rationale",
+    "Detailed prompt with style, composition, lighting, palette",
+    "Explicit steering away from AI-slop patterns",
+    "3 alternative composition ideas",
+    "Iteration process for refinement",
+    "Respects the brand palette (dark navy/cyan)"
+  ]
+}

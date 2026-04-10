@@ -1,0 +1,17 @@
+{
+  "id": "mobile_development_01",
+  "intent": "mobile_development",
+  "name": "Build a performant infinite-scroll feed in React Native",
+  "description": "A social app needs an infinite-scroll feed showing posts with text + images. Target: 60fps on mid-range Android (Pixel 6a), supports pull-to-refresh, infinite pagination, images that load lazy with skeleton placeholders.",
+  "repo_url": "internal/social-mobile",
+  "branch": "feat/feed-v2",
+  "task": "Build a performant infinite-scroll feed for a React Native app. Requirements: (1) 60fps scrolling on Pixel 6a (mid-range Android), (2) pull-to-refresh, (3) paginated loading (20 posts/page), (4) each post has text + 1-3 images, (5) images lazy-load with skeleton placeholders, (6) handles scroll-to-top, (7) memory stays bounded even with 500 posts loaded. Give me: (1) the component architecture, (2) which list component (FlatList, FlashList, etc.) and why, (3) the image library choice, (4) memoization strategy, (5) actual working code for the feed screen.",
+  "expected_outcomes": [
+    "Chooses FlashList over FlatList with reasoning (performance)",
+    "Uses expo-image or FastImage for images with caching",
+    "React.memo or memo with stable props for row components",
+    "keyExtractor and getItemType for list optimization",
+    "Skeleton placeholders shown during load",
+    "Concrete code for feed screen, not just description"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "debugging_investigation_03",
+  "intent": "debugging_investigation",
+  "name": "CI test passes locally but fails ~30% in CI — flaky for 2 weeks",
+  "description": "A specific test `test_order_aggregation` passes every time on local dev machines but fails about 30% of the time in CI (GitHub Actions on ubuntu-latest). The team has retried it 20+ times and been told 'it's flaky, just re-run'. It's now blocking merges.",
+  "repo_url": "internal/orders-service",
+  "branch": "feat/new-aggregation",
+  "task": "A Python pytest test `test_order_aggregation` fails ~30% of the time in CI, always passes locally. Team has been dismissing it as 'flaky' for 2 weeks. It's now blocking merges. Symptom: `AssertionError: Expected 150.00, got 149.99`. The test creates orders, then calls an aggregation query. Walk through the systematic investigation: (1) your top 5 hypotheses ranked by likelihood, (2) how to reliably reproduce it in CI (not local), (3) how to distinguish each hypothesis, (4) the most likely root cause for a 'local passes / CI fails / AssertionError with near-miss value' pattern, (5) the fix. Do NOT accept 'it's flaky' as an answer — real bugs hide behind that.",
+  "expected_outcomes": [
+    "Top hypotheses include: float precision, timezone, ordering, shared state, test isolation",
+    "Specific plan to reproduce in CI (binary-search the test suite, parallel workers, etc.)",
+    "Addresses that 'near-miss value' hints at float accumulation or ordering",
+    "Tests for each hypothesis",
+    "Concrete fix for the most likely root cause",
+    "Rejects the 'just retry' habit with reasoning"
+  ]
+}
