@@ -5,8 +5,10 @@ __pycache__/
 *.db
 *.db-shm
 *.db-wal
+*.db.before-*
 .pytest_cache/
 .venv/
 venv/
 dist/
 *.egg-info/
+.gstack/

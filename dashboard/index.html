@@ -75,6 +75,11 @@ tr.top:hover{background:rgba(34,211,238,.16)}
 @keyframes orb{0%{transform:translate(0,0)}33%{transform:translate(30px,-20px)}66%{transform:translate(-15px,25px)}100%{transform:translate(20px,-10px)}}
 @media(max-width:768px){.hero h1{font-size:32px}.stats{gap:24px}.stat-v{font-size:20px}}
 #loading{display:none;text-align:center;padding:32px;color:var(--ts);font-family:var(--fm)}
+.intent-selector{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding:12px 16px;background:var(--s1);border:1px solid var(--bdr);border-radius:var(--r-md)}
+.intent-selector label{font-family:var(--fm);font-size:12px;color:var(--tm);text-transform:uppercase;letter-spacing:.06em}
+.intent-selector select{background:var(--s2);border:1px solid var(--bdr);color:var(--tp);padding:6px 10px;border-radius:var(--r-sm);font-family:var(--fm);font-size:13px;cursor:pointer;min-width:260px}
+.intent-selector select:hover{border-color:var(--ac)}
+.intent-selector select:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 2px var(--ad)}
 </style>
 </head>
 <body>
@@ -100,6 +105,11 @@ tr.top:hover{background:rgba(34,211,238,.16)}
     <div class="stats" id="stats"></div>
   </div>
 
+  <div class="intent-selector" id="intent-selector-wrap">
+    <label for="intent-select">Intent:</label>
+    <select id="intent-select"></select>
+  </div>
+
   <div id="leaderboard"></div>
   <div id="loading">Loading leaderboard...</div>
 </div>
@@ -108,22 +118,29 @@ tr.top:hover{background:rgba(34,211,238,.16)}
 
 <script>
 const API = window.location.origin;
+let currentIntent = null;
 
-async function loadLeaderboard() {
+async function loadIntents() {
+  const resp = await fetch(`${API}/api/intents`);
+  const data = await resp.json();
+  return data.intents || [];
+}
+
+async function loadLeaderboard(intent) {
   const el = document.getElementById('leaderboard');
   const loading = document.getElementById('loading');
   const statsEl = document.getElementById('stats');
   loading.style.display = 'block';
 
   try {
-    const resp = await fetch(`${API}/api/skills?intent=ship_code`);
+    const resp = await fetch(`${API}/api/skills?intent=${encodeURIComponent(intent)}`);
     const data = await resp.json();
     loading.style.display = 'none';
 
     // Stats
     statsEl.innerHTML = `
       <div><div class="stat-v">${data.total}</div><div class="stat-l">Skills Ranked</div></div>
-      <div><div class="stat-v">ship_code</div><div class="stat-l">Intent</div></div>
+      <div><div class="stat-v">${intent.replace(/_/g, ' ')}</div><div class="stat-l">Intent</div></div>
     `;
 
     if (!data.skills || data.skills.length === 0) {
@@ -148,7 +165,7 @@ async function loadLeaderboard() {
     });
 
     el.innerHTML = `<div class="lb" id="lb-table">
-      <div class="lb-head"><div class="lb-t">Intent Rankings</div><div class="lb-tag">ship_code</div></div>
+      <div class="lb-head"><div class="lb-t">Intent Rankings</div><div class="lb-tag">${intent}</div></div>
       <table><thead><tr><th>#</th><th>Skill</th><th>Rating &#8595;</th><th>95% CI</th><th>Win Rate</th><th>Status</th></tr></thead>
       <tbody>${rows}</tbody></table></div>`;
   } catch (e) {
@@ -157,7 +174,30 @@ async function loadLeaderboard() {
   }
 }
 
-loadLeaderboard();
+async function init() {
+  const intents = await loadIntents();
+  if (intents.length === 0) {
+    document.getElementById('leaderboard').innerHTML = `<div class="empty"><h2>No intents yet</h2><p>Be the first to submit a skill.</p><a href="/submit" class="btn btn-p">Submit a Skill</a></div>`;
+    return;
+  }
+  // Render intent selector
+  const sel = document.getElementById('intent-select');
+  intents.forEach(i => {
+    const opt = document.createElement('option');
+    opt.value = i.id;
+    opt.textContent = `${i.id.replace(/_/g, ' ')} (${i.count})`;
+    sel.appendChild(opt);
+  });
+  sel.addEventListener('change', (e) => {
+    currentIntent = e.target.value;
+    loadLeaderboard(currentIntent);
+  });
+  currentIntent = intents[0].id;
+  sel.value = currentIntent;
+  loadLeaderboard(currentIntent);
+}
+
+init();
 </script>
 </body>
 </html>

@@ -28,7 +28,10 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, HttpUrl
 from typing import Optional
 
-from api.database import init_db, get_db, create_submission, get_submission, get_pending_submission, get_skills_by_intent, get_skill
+from api.database import (
+    init_db, get_db, create_submission, get_submission, get_pending_submission,
+    get_skills_by_intent, get_skill, get_intents
+)
 
 
 # ── Lifespan ──
@@ -55,6 +58,7 @@ class SubmitRequest(BaseModel):
     intent: str
     description: Optional[str] = None
     github_pat: str
+    skill_path: str = ""  # subdirectory within repo (e.g. "skills/frontend-design")
 
 
 class SubmitResponse(BaseModel):
@@ -148,7 +152,8 @@ async def submit_skill(req: SubmitRequest, background_tasks: BackgroundTasks):
         # Launch eval in background
         from eval.engine import run_full_eval
         background_tasks.add_task(run_full_eval, sub_id, req.repo_url, commit_sha,
-                                  req.intent, req.description or "", username)
+                                  req.intent, req.description or "", username,
+                                  req.skill_path)
 
         return SubmitResponse(
             submission_id=sub_id,
@@ -228,6 +233,34 @@ async def list_skills(intent: str = "ship_code"):
             "intent": intent,
             "total": len(ranked),
             "ranked_by": "bradley_terry",
+        }
+    finally:
+        await db.close()
+
+
+INTENT_DESCRIPTIONS = {
+    "react_component_design": "Building React/UI components with modern tooling (shadcn, Tailwind, TypeScript)",
+    "ship_code": "Shipping code to production (PRs, tests, deploys)",
+    # Add more as new intents are introduced
+}
+
+
+@app.get("/api/intents")
+async def list_intents():
+    """Return distinct intents with their skill counts and descriptions."""
+    db = await get_db()
+    try:
+        intents = await get_intents(db)
+        return {
+            "intents": [
+                {
+                    "id": i["id"],
+                    "count": i["count"],
+                    "description": INTENT_DESCRIPTIONS.get(i["id"], ""),
+                }
+                for i in intents
+            ],
+            "total": len(intents),
         }
     finally:
         await db.close()

@@ -25,27 +25,33 @@ MAX_RETRIES = 3
 RETRY_DELAY = 2.0  # seconds
 
 
-JUDGE_PROMPT = """You are evaluating two AI skill outputs for the task: "{intent_description}".
+JUDGE_PROMPT = """Compare two AI skill attempts at this task. Judge which attempt better accomplishes it.
 
-Scenario: {scenario_description}
+TASK: {intent_description}
 
---- OUTPUT FROM SKILL {label_first} ---
+SCENARIO: {scenario_description}
+
+--- ATTEMPT {label_first} ---
 {output_first}
 
---- OUTPUT FROM SKILL {label_second} ---
+--- ATTEMPT {label_second} ---
 {output_second}
 
-Which output better accomplishes the task? Consider:
-1. Completeness: did the skill do everything asked?
-2. Correctness: are the results accurate?
-3. Side effects: files created, commands run, errors encountered?
-4. Efficiency: token cost, time taken, unnecessary steps?
+Judge criteria:
+1. Completeness: does it implement all requirements?
+2. Correctness: will the code/commands actually work? Uses real APIs, not invented ones?
+3. Concreteness: working code vs hand-wavy "you would do X" commentary?
+4. Best practices: types, error handling, accessibility, sensible defaults?
 
-Respond with EXACTLY one word: "{label_first}" or "{label_second}" or "TIE"
-Then a pipe character |
-Then a one-sentence reason.
+Reply with ONE line only in this exact format:
+{label_first}|one-sentence reason
+OR
+{label_second}|one-sentence reason
+OR
+TIE|one-sentence reason
 
-Example: {label_first}|This output created the PR with passing tests while the other skipped tests entirely."""
+Do NOT prefix with "VERDICT|" — just the letter and reason. Example:
+{label_first}|Uses shadcn Card primitives with cva variants while the other hardcodes Tailwind classes."""
 
 
 async def call_judge(intent_desc: str, scenario_desc: str,
@@ -109,30 +115,49 @@ async def call_judge(intent_desc: str, scenario_desc: str,
 
 def _parse_verdict(text: str, label_first: str, label_second: str, swapped: bool) -> tuple[str, str]:
     """Parse judge output into (canonical_verdict, reason).
-    Canonical verdict is always in terms of original A/B (not swapped)."""
+    Canonical verdict is always in terms of original A/B (not swapped).
+
+    Handles multiple formats:
+      - "A|reason" (preferred)
+      - "VERDICT|A\\nA|reason" (qwen sometimes does this)
+      - "B|reason\\nsomething else"
+    Strategy: scan every line, find the first one whose prefix is A/B/TIE.
+    """
     text = text.strip()
+    valid_labels = {label_first.upper(), label_second.upper(), "TIE"}
 
-    # Try pipe-separated format first
-    if "|" in text:
-        parts = text.split("|", 1)
-        raw_verdict = parts[0].strip().upper()
-        reason = parts[1].strip() if len(parts) > 1 else ""
-    else:
-        # Fallback: first word
-        words = text.split()
-        raw_verdict = words[0].strip().upper() if words else ""
-        reason = " ".join(words[1:]) if len(words) > 1 else ""
+    raw_verdict = None
+    reason = ""
+    for line in text.split("\n"):
+        line = line.strip()
+        if "|" not in line:
+            continue
+        prefix = line.split("|", 1)[0].strip().upper()
+        if prefix in valid_labels:
+            raw_verdict = prefix
+            reason = line.split("|", 1)[1].strip()
+            break
 
-    # Map to canonical A/B/TIE
+    if raw_verdict is None:
+        # Fallback: scan for A, B, or TIE as a standalone token
+        for tok in text.split():
+            tok_clean = tok.strip(".,:;|").upper()
+            if tok_clean in valid_labels:
+                raw_verdict = tok_clean
+                reason = text[:150]
+                break
+
+    if raw_verdict is None:
+        return "INCONCLUSIVE", f"unparsable: {text[:100]}"
+
+    # Map to canonical A/B/TIE (unswap if needed)
     if raw_verdict == "TIE":
         return "TIE", reason
     elif raw_verdict == label_first.upper():
-        # If swapped, label_first is "B" but means original B
         return ("B" if swapped else "A"), reason
     elif raw_verdict == label_second.upper():
         return ("A" if swapped else "B"), reason
-    else:
-        return "INCONCLUSIVE", f"Unparseable verdict: {text[:100]}"
+    return "INCONCLUSIVE", f"unrecognized: {raw_verdict}"
 
 
 async def judge_comparison(intent_desc: str, scenario_desc: str,

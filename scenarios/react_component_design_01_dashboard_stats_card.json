@@ -1,0 +1,17 @@
+{
+  "id": "react_component_design_01",
+  "intent": "react_component_design",
+  "name": "Dashboard stats card with trend indicator",
+  "description": "Building a SaaS analytics dashboard. Need a reusable stats card component that shows a metric (like 'Monthly Revenue: $42,312'), a trend (+12% from last month), and a small sparkline chart. Will be used 6-8 times per dashboard page in different colors/variants.",
+  "repo_url": "internal/saas-dashboard",
+  "branch": "feat/metric-cards",
+  "task": "Create a reusable React component called `StatsCard` that displays: (1) a label like 'Monthly Revenue', (2) a main value like '$42,312', (3) a trend change like '+12.3% from last month' with green/red color for up/down, (4) a small sparkline chart showing the last 30 days. It should support variants (size=sm/md/lg) and color (default/success/warning/danger). Use shadcn/ui primitives where possible. Output the complete component file including imports, Tailwind classes, and TypeScript props interface.",
+  "expected_outcomes": [
+    "Uses shadcn Card or composes from Card.Header/Card.Content primitives",
+    "TypeScript interface for props including size, color, trend direction",
+    "Trend arrow indicator with correct color (green for up, red for down)",
+    "Sparkline implementation (references recharts, visx, or chart library)",
+    "Variant system using cva or similar (size + color)",
+    "Proper semantic HTML (uses dl/dt/dd or similar for metric labeling)"
+  ]
+}

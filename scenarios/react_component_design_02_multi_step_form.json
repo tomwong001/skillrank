@@ -1,0 +1,18 @@
+{
+  "id": "react_component_design_02",
+  "intent": "react_component_design",
+  "name": "Multi-step onboarding form with validation",
+  "description": "B2B product needs a 3-step onboarding wizard: (1) company info, (2) team size + industry, (3) billing plan. Mobile-responsive. Must show clear progress, allow going back/forward, validate each step before proceeding, and preserve state across steps. Using Next.js 15 + Tailwind + shadcn.",
+  "repo_url": "internal/product-onboarding",
+  "branch": "feat/multi-step-wizard",
+  "task": "Build a multi-step onboarding form component using shadcn/ui. Requirements: 3 steps with visual progress indicator at top; each step has form fields appropriate to its purpose (company: name/website/size; team: roles/industry; billing: plan selection); validation before advancing (use react-hook-form + zod); back/forward navigation; state preserved across steps; mobile-responsive (step indicator collapses on small screens); animated transitions between steps. Return the complete working component with all sub-components.",
+  "expected_outcomes": [
+    "Uses shadcn Form, Input, Select, Button, and Progress or similar",
+    "react-hook-form + zod for validation (not manual state)",
+    "State management across steps (useFormContext or lifted state)",
+    "Visual progress indicator (numbered stepper or progress bar)",
+    "Back/forward navigation with validation gating",
+    "Mobile responsive design (steps collapse or adapt)",
+    "Animation between step transitions (framer-motion or CSS)"
+  ]
+}

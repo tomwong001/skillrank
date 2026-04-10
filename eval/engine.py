@@ -18,9 +18,13 @@ from api.database import (
     get_db, get_skills_by_intent, get_scenarios_by_intent,
     create_skill, update_skill_rating, create_comparison,
     create_eval_run, update_eval_run, update_submission, get_skill,
+    get_cached_skill_content,
 )
 from eval.bradley_terry import Rating, update_ratings, rate_first_skill
-from eval.sandbox import run_skill_in_sandbox, run_skill_subprocess, check_docker_available
+from eval.sandbox import (
+    run_skill_in_sandbox, run_skill_subprocess, check_docker_available,
+    run_skill_from_cache,
+)
 from judges.pairwise import judge_comparison
 
 # Concurrency limits
@@ -29,7 +33,8 @@ JUDGE_SEMAPHORE = asyncio.Semaphore(5)   # moderate concurrency for paid models
 
 
 async def run_full_eval(submission_id: str, repo_url: str, commit_sha: str,
-                        intent: str, description: str, author: str):
+                        intent: str, description: str, author: str,
+                        skill_path: str = ""):
     """
     Full eval pipeline for a submitted skill.
     Called as a background task from the API.
@@ -38,11 +43,15 @@ async def run_full_eval(submission_id: str, repo_url: str, commit_sha: str,
     try:
         await update_submission(db, submission_id, status="evaluating")
 
-        # Create or update the skill record
-        skill_id = f"{author}/{repo_url.rstrip('/').split('/')[-1]}"
+        # Create or update the skill record. Skill ID includes subdir for uniqueness.
+        repo_name = repo_url.rstrip("/").split("/")[-1]
+        skill_id_suffix = f"{repo_name}/{skill_path}" if skill_path else repo_name
+        skill_id = f"{author}/{skill_id_suffix}"
+        display_name = skill_path.split("/")[-1] if skill_path else repo_name
         skill = await create_skill(
-            db, skill_id, repo_url.rstrip("/").split("/")[-1],
-            repo_url, commit_sha, intent, description, author
+            db, skill_id, display_name,
+            repo_url, commit_sha, intent, description, author,
+            skill_path=skill_path,
         )
 
         await update_submission(db, submission_id, skill_id=skill_id)
@@ -62,19 +71,25 @@ async def run_full_eval(submission_id: str, repo_url: str, commit_sha: str,
         use_docker = await check_docker_available()
 
         # Phase 1: Run the new skill against all scenarios
+        # Fast path: if skill_md_content was cached on the skill row (from bulk
+        # import), call the LLM executor directly instead of re-cloning.
+        new_skill_cached = await get_cached_skill_content(db, skill_id)
+
         new_skill_outputs = {}
         for scenario in scenarios:
             async with SKILL_SEMAPHORE:
                 run_id = uuid.uuid4().hex[:16]
                 await create_eval_run(db, run_id, submission_id, skill_id, scenario["id"])
 
-                if use_docker:
+                if new_skill_cached:
+                    result = await run_skill_from_cache(new_skill_cached, scenario["task"])
+                elif use_docker:
                     result = await run_skill_in_sandbox(
                         repo_url, commit_sha, scenario["task"],
                         scenario["repo_url"], scenario["branch"]
                     )
                 else:
-                    result = await run_skill_subprocess(repo_url, commit_sha, scenario["task"])
+                    result = await run_skill_subprocess(repo_url, commit_sha, scenario["task"], skill_path)
 
                 await update_eval_run(db, run_id,
                                       output=result["output"],
@@ -113,9 +128,15 @@ async def run_full_eval(submission_id: str, repo_url: str, commit_sha: str,
                 if new_skill_outputs.get(scenario["id"], {}).get("status") != "success":
                     continue
 
-                # Run existing skill on same scenario (or use cached output)
+                # Run existing skill on same scenario. Prefer cached SKILL.md
+                # (avoids re-cloning for skills_sh_import rows).
                 async with SKILL_SEMAPHORE:
-                    if use_docker:
+                    existing_cached = existing.get("skill_md_content")
+                    if existing_cached:
+                        existing_result = await run_skill_from_cache(
+                            existing_cached, scenario["task"]
+                        )
+                    elif use_docker:
                         existing_result = await run_skill_in_sandbox(
                             existing["repo_url"], existing["commit_sha"],
                             scenario["task"], scenario["repo_url"], scenario["branch"]
@@ -123,7 +144,7 @@ async def run_full_eval(submission_id: str, repo_url: str, commit_sha: str,
                     else:
                         existing_result = await run_skill_subprocess(
                             existing["repo_url"], existing["commit_sha"],
-                            scenario["task"]
+                            scenario["task"], existing.get("skill_path", "")
                         )
 
                 if existing_result["status"] != "success":

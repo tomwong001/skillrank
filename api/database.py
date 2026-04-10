@@ -105,26 +105,142 @@ async def init_db():
     try:
         await db.executescript(SCHEMA)
         await db.commit()
+        await _migrate_v2(db)
     finally:
         await db.close()
+
+
+async def _migrate_v2(db: aiosqlite.Connection):
+    """
+    v2 migration: add skill_path, skill_md_content, source columns.
+    Purge ship_code legacy data.
+    Idempotent via PRAGMA user_version.
+    """
+    cursor = await db.execute("PRAGMA user_version")
+    row = await cursor.fetchone()
+    current_version = row[0] if row else 0
+    if current_version >= 2:
+        return
+
+    # Rebuild skills table with new columns and updated unique constraint
+    await db.executescript("""
+        CREATE TABLE IF NOT EXISTS skills_v2 (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            repo_url TEXT NOT NULL,
+            skill_path TEXT NOT NULL DEFAULT '',
+            commit_sha TEXT NOT NULL,
+            intent TEXT NOT NULL,
+            description TEXT,
+            skill_md_content TEXT,
+            source TEXT NOT NULL DEFAULT 'user_submit',
+            author TEXT NOT NULL,
+            rating REAL DEFAULT 1.0,
+            rating_variance REAL DEFAULT 1.0,
+            comparisons INTEGER DEFAULT 0,
+            wins INTEGER DEFAULT 0,
+            losses INTEGER DEFAULT 0,
+            ties INTEGER DEFAULT 0,
+            status TEXT DEFAULT 'active',
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            UNIQUE(repo_url, skill_path, intent)
+        );
+
+        INSERT OR IGNORE INTO skills_v2 (
+            id, name, repo_url, skill_path, commit_sha, intent, description,
+            skill_md_content, source, author, rating, rating_variance,
+            comparisons, wins, losses, ties, status, created_at, updated_at
+        )
+        SELECT
+            id, name, repo_url, '', commit_sha, intent, description,
+            NULL, 'user_submit', author, rating, rating_variance,
+            comparisons, wins, losses, ties, status, created_at, updated_at
+        FROM skills
+        WHERE intent != 'ship_code';
+
+        DROP TABLE skills;
+        ALTER TABLE skills_v2 RENAME TO skills;
+    """)
+
+    # Purge ship_code from related tables
+    await db.execute("DELETE FROM submissions WHERE intent = 'ship_code'")
+    await db.execute("DELETE FROM comparisons WHERE intent = 'ship_code'")
+    await db.execute("DELETE FROM scenarios WHERE intent = 'ship_code'")
+    await db.execute(
+        "DELETE FROM eval_runs WHERE scenario_id LIKE 'ship_code_%'"
+    )
+
+    # Add skill_path to submissions table (ALTER is fine here — no unique constraint change)
+    try:
+        await db.execute(
+            "ALTER TABLE submissions ADD COLUMN skill_path TEXT NOT NULL DEFAULT ''"
+        )
+    except Exception:
+        pass  # Column may already exist if migration re-ran partially
+
+    await db.execute("PRAGMA user_version = 2")
+    await db.commit()
 
 
 # ── Skills ──
 
 async def create_skill(db: aiosqlite.Connection, skill_id: str, name: str,
                        repo_url: str, commit_sha: str, intent: str,
-                       description: str, author: str) -> dict:
+                       description: str, author: str,
+                       skill_path: str = "",
+                       skill_md_content: Optional[str] = None,
+                       source: str = "user_submit") -> dict:
     now = datetime.now(timezone.utc).isoformat()
     await db.execute(
-        """INSERT INTO skills (id, name, repo_url, commit_sha, intent, description, author, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-           ON CONFLICT(repo_url, intent) DO UPDATE SET
+        """INSERT INTO skills (id, name, repo_url, skill_path, commit_sha, intent,
+                               description, skill_md_content, source, author,
+                               created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+           ON CONFLICT(repo_url, skill_path, intent) DO UPDATE SET
              commit_sha=excluded.commit_sha, name=excluded.name,
-             description=excluded.description, updated_at=excluded.updated_at""",
-        (skill_id, name, repo_url, commit_sha, intent, description, author, now, now)
+             description=excluded.description,
+             skill_md_content=excluded.skill_md_content,
+             updated_at=excluded.updated_at""",
+        (skill_id, name, repo_url, skill_path, commit_sha, intent,
+         description, skill_md_content, source, author, now, now)
     )
     await db.commit()
     return await get_skill(db, skill_id)
+
+
+async def bulk_import_skill(db: aiosqlite.Connection, skill_id: str, name: str,
+                             repo_url: str, skill_path: str, commit_sha: str,
+                             intent: str, description: str, author: str,
+                             skill_md_content: str) -> dict:
+    """Import a skill from skills.sh (or similar directory) at baseline rating.
+    Sets source='skills_sh_import'. No eval triggered — use bulk_eval later."""
+    return await create_skill(
+        db, skill_id, name, repo_url, commit_sha, intent, description, author,
+        skill_path=skill_path,
+        skill_md_content=skill_md_content,
+        source="skills_sh_import",
+    )
+
+
+async def get_cached_skill_content(db: aiosqlite.Connection, skill_id: str) -> Optional[str]:
+    """Return the cached SKILL.md content for a skill, if any."""
+    cursor = await db.execute(
+        "SELECT skill_md_content FROM skills WHERE id = ?", (skill_id,)
+    )
+    row = await cursor.fetchone()
+    if row and row[0]:
+        return row[0]
+    return None
+
+
+async def get_intents(db: aiosqlite.Connection) -> list[dict]:
+    """Return distinct intents with skill counts."""
+    cursor = await db.execute(
+        "SELECT intent, COUNT(*) as count FROM skills WHERE status='active' GROUP BY intent ORDER BY count DESC"
+    )
+    rows = await cursor.fetchall()
+    return [{"id": r["intent"], "count": r["count"]} for r in rows]
 
 
 async def get_skill(db: aiosqlite.Connection, skill_id: str) -> Optional[dict]:

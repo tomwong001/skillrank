@@ -11,17 +11,30 @@ Each eval runs in a disposable Docker container:
 import asyncio
 import os
 import json
+import logging
 import time
 import uuid
 import tempfile
 import shutil
 from typing import Optional
 
+import httpx
+
+logger = logging.getLogger(__name__)
+
 
 DOCKER_IMAGE = os.environ.get("SKILLRANK_SANDBOX_IMAGE", "skillrank-sandbox:latest")
 TIMEOUT_S = int(os.environ.get("SKILLRANK_TIMEOUT", "120"))
 CPU_LIMIT = os.environ.get("SKILLRANK_CPU_LIMIT", "2")
 MEM_LIMIT = os.environ.get("SKILLRANK_MEM_LIMIT", "4g")
+
+# LLM executor config (reuses judge credentials)
+OPENROUTER_BASE = "https://openrouter.ai/api/v1"
+OPENROUTER_KEY = os.environ.get("OPENROUTER_API_KEY", "")
+EXECUTOR_MODEL = os.environ.get("EXECUTOR_MODEL", "qwen/qwen-turbo")
+EXECUTOR_MAX_TOKENS = int(os.environ.get("EXECUTOR_MAX_TOKENS", "1200"))
+EXECUTOR_TIMEOUT_S = 120.0
+EXECUTOR_MAX_RETRIES = 3
 
 
 async def run_skill_in_sandbox(
@@ -142,16 +155,108 @@ async def check_docker_available() -> bool:
         return False
 
 
-# ── Fallback: subprocess sandbox (for dev/testing without Docker) ──
+# ── LLM executor: the heart of real-execution eval ──
+
+EXECUTOR_PROMPT = """You are an AI coding agent that has loaded the skill guidance document below. Follow its specific methodology and techniques to solve the task. Write concrete, working code — not meta-commentary about your approach.
+
+SKILL GUIDANCE DOCUMENT:
+{skill_content}
+
+TASK:
+{task}
+
+Write the solution (complete code with imports, specific commands, or concrete output):"""
+
+
+async def execute_skill_via_llm(skill_content: str, scenario_task: str) -> dict:
+    """
+    Feed {skill guidance + task} to an LLM (qwen-turbo by default) and
+    capture its response as the skill's "attempt" at the task. This is the
+    core of SkillRank's eval: different skills produce different attempts,
+    which the judge then compares pairwise.
+
+    Returns {output, stderr, exit_code, duration_s, status}.
+    """
+    if not OPENROUTER_KEY:
+        return {
+            "output": "",
+            "stderr": "OPENROUTER_API_KEY not set — cannot run LLM executor",
+            "exit_code": -1,
+            "duration_s": 0.0,
+            "status": "error",
+        }
+
+    prompt = EXECUTOR_PROMPT.format(
+        skill_content=skill_content[:8000],
+        task=scenario_task,
+    )
+    start = time.monotonic()
+
+    last_err = None
+    for attempt in range(EXECUTOR_MAX_RETRIES):
+        try:
+            async with httpx.AsyncClient(timeout=EXECUTOR_TIMEOUT_S) as client:
+                resp = await client.post(
+                    f"{OPENROUTER_BASE}/chat/completions",
+                    headers={
+                        "Authorization": f"Bearer {OPENROUTER_KEY}",
+                        "HTTP-Referer": "https://skillrank.dev",
+                        "X-Title": "SkillRank Executor",
+                    },
+                    json={
+                        "model": EXECUTOR_MODEL,
+                        "messages": [{"role": "user", "content": prompt}],
+                        "max_tokens": EXECUTOR_MAX_TOKENS,
+                        "temperature": 0.2,
+                    },
+                )
+                resp.raise_for_status()
+                data = resp.json()
+                output = data["choices"][0]["message"]["content"].strip()
+                duration = time.monotonic() - start
+                logger.info(f"Executor call succeeded: model={EXECUTOR_MODEL}, output_len={len(output)}, duration={duration:.1f}s")
+                return {
+                    "output": output,
+                    "stderr": "",
+                    "exit_code": 0,
+                    "duration_s": round(duration, 2),
+                    "status": "success",
+                }
+        except Exception as e:
+            last_err = e
+            logger.warning(f"Executor attempt {attempt + 1}/{EXECUTOR_MAX_RETRIES} failed: {type(e).__name__}: {e}")
+            if attempt < EXECUTOR_MAX_RETRIES - 1:
+                await asyncio.sleep(3 * (attempt + 1))
+
+    duration = time.monotonic() - start
+    return {
+        "output": "",
+        "stderr": f"Executor failed after {EXECUTOR_MAX_RETRIES} attempts: {last_err}",
+        "exit_code": -1,
+        "duration_s": round(duration, 2),
+        "status": "error",
+    }
+
+
+async def run_skill_from_cache(skill_md_content: str, scenario_task: str) -> dict:
+    """Fast path: skill content is already cached in DB, no clone needed."""
+    return await execute_skill_via_llm(skill_md_content, scenario_task)
+
+
+# ── Fallback: subprocess sandbox (clones repo, reads SKILL.md, runs executor) ──
 
 async def run_skill_subprocess(
     repo_url: str,
     commit_sha: str,
     scenario_task: str,
+    skill_path: str = "",
 ) -> dict:
     """
-    Lightweight fallback: run skill in a subprocess with git worktree.
-    WARNING: No isolation. Only use for local dev with trusted code.
+    Lightweight execution path: clone repo at commit, read SKILL.md at
+    $skill_path/SKILL.md (defaults to repo root), then run the LLM executor.
+
+    Used when the skill_md_content is not cached in DB (fresh user submission).
+    WARNING: subprocess git clone has no isolation — only use for trusted sources.
     """
     work_dir = tempfile.mkdtemp(prefix="skillrank-eval-")
     start = time.monotonic()
@@ -174,29 +279,24 @@ async def run_skill_subprocess(
                 "status": "error",
             }
 
-        # Check for SKILL.md
-        skill_md = os.path.join(work_dir, "skill", "SKILL.md")
-        if not os.path.exists(skill_md):
+        # Resolve SKILL.md path (with subdir support)
+        skill_md_path = os.path.join(work_dir, "skill", skill_path, "SKILL.md") if skill_path else os.path.join(work_dir, "skill", "SKILL.md")
+        if not os.path.exists(skill_md_path):
             return {
                 "output": "",
-                "stderr": "No SKILL.md found in repository root",
+                "stderr": f"No SKILL.md found at {skill_path or 'repo root'}",
                 "exit_code": -1,
                 "duration_s": round(time.monotonic() - start, 2),
                 "status": "error",
             }
 
-        # Read SKILL.md content as the skill output for now
-        with open(skill_md) as f:
+        with open(skill_md_path) as f:
             skill_content = f.read()
 
-        duration = time.monotonic() - start
-        return {
-            "output": f"SKILL.md content ({len(skill_content)} chars):\n{skill_content[:5000]}",
-            "stderr": "",
-            "exit_code": 0,
-            "duration_s": round(duration, 2),
-            "status": "success",
-        }
+        # Run LLM executor with the SKILL.md content
+        result = await execute_skill_via_llm(skill_content, scenario_task)
+        result["duration_s"] = round(time.monotonic() - start, 2)
+        return result
 
     except asyncio.TimeoutError:
         return {

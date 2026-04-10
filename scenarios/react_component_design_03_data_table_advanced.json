@@ -1,0 +1,19 @@
+{
+  "id": "react_component_design_03",
+  "intent": "react_component_design",
+  "name": "Advanced data table with sorting, filtering, pagination",
+  "description": "Admin dashboard for a SaaS product. Need a reusable data table to display ~1000 user records with columns: name, email, plan, status, signup_date, last_active. Users need to sort by any column, filter by status/plan, search by name/email, and paginate (50 rows/page). Must be performant, accessible, and styled to match shadcn aesthetic.",
+  "repo_url": "internal/admin-dashboard",
+  "branch": "feat/users-table",
+  "task": "Build a DataTable component with: column sorting (click header to sort asc/desc); multi-column filtering (status dropdown, plan dropdown, search input); client-side pagination (50 rows/page); row selection (checkbox column); column visibility toggle; empty state and loading state; keyboard navigation; responsive behavior (horizontal scroll or card view on mobile). Use shadcn Table primitives and @tanstack/react-table v8 (not v7). Output the full component code plus example usage.",
+  "expected_outcomes": [
+    "Uses @tanstack/react-table v8 API (flexRender, getCoreRowModel, etc.)",
+    "Uses shadcn Table primitives (Table, TableHeader, TableRow, TableCell)",
+    "Sortable column headers with visual indicators",
+    "Filter controls: dropdown selects for status/plan, Input for search",
+    "Pagination controls with page size selector",
+    "Row selection with indeterminate state on header checkbox",
+    "Empty state and loading skeleton",
+    "TypeScript generic for row type (DataTable<T>)"
+  ]
+}
