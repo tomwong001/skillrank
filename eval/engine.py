@@ -25,7 +25,7 @@ from judges.pairwise import judge_comparison
 
 # Concurrency limits
 SKILL_SEMAPHORE = asyncio.Semaphore(3)   # max 3 concurrent skill runs
-JUDGE_SEMAPHORE = asyncio.Semaphore(1)   # sequential judge calls (free tier rate limits)
+JUDGE_SEMAPHORE = asyncio.Semaphore(5)   # moderate concurrency for paid models
 
 
 async def run_full_eval(submission_id: str, repo_url: str, commit_sha: str,

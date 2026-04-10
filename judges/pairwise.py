@@ -21,8 +21,8 @@ OPENROUTER_BASE = "https://openrouter.ai/api/v1"
 OPENROUTER_KEY = os.environ.get("OPENROUTER_API_KEY", "")
 JUDGE_MODEL = os.environ.get("JUDGE_MODEL", "openrouter/auto")
 
-MAX_RETRIES = 5
-RETRY_DELAY = 10.0  # seconds (generous for free tier rate limits)
+MAX_RETRIES = 3
+RETRY_DELAY = 2.0  # seconds
 
 
 JUDGE_PROMPT = """You are evaluating two AI skill outputs for the task: "{intent_description}".
@@ -149,12 +149,12 @@ async def judge_comparison(intent_desc: str, scenario_desc: str,
     """
     swap_orders = [False, True, random.choice([True, False])][:num_runs]
 
-    # Run judge calls sequentially to avoid rate limits on free tier
-    results = []
-    for swap in swap_orders:
-        result = await call_judge(intent_desc, scenario_desc, output_a, output_b, swap)
-        results.append(result)
-        await asyncio.sleep(5)  # rate limit buffer between calls
+    # Run judge calls concurrently (paid models have no rate limit)
+    tasks = [
+        call_judge(intent_desc, scenario_desc, output_a, output_b, swap)
+        for swap in swap_orders
+    ]
+    results = await asyncio.gather(*tasks)
 
     # Majority vote
     verdicts = [r["verdict"] for r in results]
