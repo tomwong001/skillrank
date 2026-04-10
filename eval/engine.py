@@ -43,11 +43,13 @@ async def run_full_eval(submission_id: str, repo_url: str, commit_sha: str,
     try:
         await update_submission(db, submission_id, status="evaluating")
 
-        # Create or update the skill record. Skill ID includes subdir for uniqueness.
+        # Create or update the skill record.
+        # skill_id format: "{author}/{repo}@{intent}" — lets the same repo
+        # compete in multiple intents as distinct rows. The API strips the
+        # "@{intent}" suffix before displaying.
         repo_name = repo_url.rstrip("/").split("/")[-1]
-        skill_id_suffix = f"{repo_name}/{skill_path}" if skill_path else repo_name
-        skill_id = f"{author}/{skill_id_suffix}"
-        display_name = skill_path.split("/")[-1] if skill_path else repo_name
+        skill_id = f"{author}/{repo_name}@{intent}"
+        display_name = f"{author}/{repo_name}"
         skill = await create_skill(
             db, skill_id, display_name,
             repo_url, commit_sha, intent, description, author,

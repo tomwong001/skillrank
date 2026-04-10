@@ -209,8 +209,8 @@ async def list_skills(intent: str):
 
         ranked = []
         for i, s in enumerate(skills):
-            # Build a direct GitHub URL to the skill's actual location.
-            # If skill_path is set, link to the subdirectory. Otherwise repo root.
+            # Build a direct GitHub URL to the specific sub-skill the eval used.
+            # skill_path holds the subdirectory containing the representative SKILL.md.
             repo_url = s["repo_url"].rstrip("/")
             skill_path = s.get("skill_path") or ""
             if skill_path:
@@ -218,9 +218,14 @@ async def list_skills(intent: str):
             else:
                 github_url = repo_url
 
+            # Display skill_id as "owner/repo" — strip the internal "@intent" suffix
+            # used by the DB to allow the same repo in multiple intents.
+            raw_id = s["id"]
+            display_id = raw_id.split("@", 1)[0] if "@" in raw_id else raw_id
+
             ranked.append({
                 "rank": i + 1,
-                "skill_id": s["id"],
+                "skill_id": display_id,
                 "name": s["name"],
                 "author": s["author"],
                 "rating": round(s["rating"], 3),
@@ -252,9 +257,6 @@ async def list_skills(intent: str):
 INTENT_DESCRIPTIONS = {
     "react_component_design": "Building React/UI components with modern tooling (shadcn, Tailwind, TypeScript)",
     "ui_polish": "Polishing UI quality — alignment, spacing, performance, edge cases, design system consistency",
-    "seo_cro": "SEO audits and conversion rate optimization for marketing pages and signup flows",
-    "ship_code": "Shipping code to production (PRs, tests, deploys)",
-    # Add more as new intents are introduced
 }
 
 
