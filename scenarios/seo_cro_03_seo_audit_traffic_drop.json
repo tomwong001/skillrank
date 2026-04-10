@@ -1,0 +1,17 @@
+{
+  "id": "seo_cro_03",
+  "intent": "seo_cro",
+  "name": "Traffic dropped 40% after Google update",
+  "description": "B2B SaaS blog: 200 posts, was getting 50K monthly organic visitors. After the March 2026 Google core update, traffic dropped 40% to 30K/month. Most affected pages: long-tail 'how to X' posts that used to rank #1-3. Site has: generic meta descriptions, no schema markup, thin content on tag/category pages, duplicate title tags on paginated archives, and an aggressive interstitial popup on mobile.",
+  "repo_url": "internal/saas-blog",
+  "branch": "main",
+  "task": "Google's March 2026 core update cut our organic traffic 40%. We lost rankings on long-tail 'how to' posts that used to rank #1-3. Audit the site's SEO issues and prioritize fixes:\n\nKnown issues:\n- Generic meta descriptions (auto-generated from first sentence)\n- No schema markup anywhere\n- Category/tag archive pages: thin content, duplicate titles\n- Mobile interstitial popup blocks content on load\n- No topical clustering between related posts\n\nGive me:\n1. A prioritized fix list (P0, P1, P2) with specific actions\n2. Which issue is most likely THE cause of the ranking drop, and why\n3. Expected recovery timeline if we fix the top 3\n4. One-line technical fix for the mobile interstitial (exact code/config)",
+  "expected_outcomes": [
+    "Prioritized fix list with clear tiers",
+    "Identifies mobile interstitial as a likely Helpful Content / Page Experience hit",
+    "Recommends schema markup with specific types (Article, FAQ, HowTo)",
+    "Addresses thin archive pages (noindex or content expansion)",
+    "Gives timeline expectation (realistic, not 'next week')",
+    "Concrete technical fix for at least one issue"
+  ]
+}

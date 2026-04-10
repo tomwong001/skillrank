@@ -154,10 +154,19 @@ async def run_full_eval(submission_id: str, repo_url: str, commit_sha: str,
                 else:
                     # Judge comparison
                     logger.info(f"Judging: {skill_id} vs {existing['id']} on {scenario['name']}")
+                    # Parse expected_outcomes back from JSON (stored as string in DB)
+                    expected_raw = scenario.get("expected_outcomes", "")
+                    if isinstance(expected_raw, str):
+                        try:
+                            expected_list = json.loads(expected_raw)
+                        except Exception:
+                            expected_list = []
+                    else:
+                        expected_list = expected_raw or []
                     async with JUDGE_SEMAPHORE:
                         comp_result = await judge_comparison(
-                            intent_desc=f"{intent}: {scenario.get('task', '')}",
-                            scenario_desc=scenario.get("description", ""),
+                            task=scenario.get("task", ""),
+                            expected_outcomes=expected_list,
                             output_a=new_output,
                             output_b=existing_result["output"],
                         )

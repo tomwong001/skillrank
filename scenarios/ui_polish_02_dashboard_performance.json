@@ -1,0 +1,17 @@
+{
+  "id": "ui_polish_02",
+  "intent": "ui_polish",
+  "name": "Dashboard is slow and janky",
+  "description": "User complaints: the analytics dashboard takes ~4 seconds to become interactive (LCP poor), scrolling the table with 500 rows is janky (dropped frames), and the modal open/close animation stutters. Bundle is 1.2MB gzipped. Built in React + Tailwind + Chart.js + react-table.",
+  "repo_url": "internal/saas-dashboard",
+  "branch": "main",
+  "task": "The dashboard has these specific issues:\n1. Initial load is 4s (LCP 4.2s, TBT 850ms). Bundle = 1.2MB gzipped.\n2. Scrolling a table with 500 rows drops frames (users say it 'feels sticky').\n3. A modal component's open animation stutters — it fades in while also animating height from 0 to auto.\n4. Charts re-render on every parent state change even when data hasn't changed.\n\nDiagnose and fix each issue. For each, give: (a) root cause, (b) concrete code change (with before/after), (c) expected impact. Be specific — name the React hooks, CSS properties, bundle tools, and patterns you'd use.",
+  "expected_outcomes": [
+    "Identifies bundle-size culprits (Chart.js bloat, tree-shaking, dynamic import)",
+    "Recommends windowing/virtualization (react-window, @tanstack/react-virtual) for 500-row table",
+    "Diagnoses modal stutter: animating 'height: auto' is unsupported; suggests grid-rows trick or transform+opacity",
+    "Proposes React.memo or useMemo for chart re-renders",
+    "Gives concrete before/after code for at least one fix",
+    "Estimates measurable impact (e.g. 'LCP should drop to ~1.5s')"
+  ]
+}

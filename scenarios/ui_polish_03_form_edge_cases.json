@@ -1,0 +1,18 @@
+{
+  "id": "ui_polish_03",
+  "intent": "ui_polish",
+  "name": "Form breaks on edge cases",
+  "description": "A profile edit form works on the happy path but users have reported: the form crashes when a username is 100 characters long, the avatar upload shows 'undefined' when the file picker is cancelled, the save button doesn't reflect loading state during a slow save, and long display names overflow the header on mobile.",
+  "repo_url": "internal/user-profile",
+  "branch": "main",
+  "task": "Here's the current profile form:\n\n```tsx\nexport function ProfileForm({ user }) {\n  const [name, setName] = useState(user.name);\n  const [avatar, setAvatar] = useState(user.avatar);\n\n  const handleSave = async () => {\n    await fetch('/api/profile', { method: 'PUT', body: JSON.stringify({name, avatar}) });\n  };\n\n  const handleAvatarChange = (e) => {\n    const file = e.target.files[0];\n    setAvatar(URL.createObjectURL(file));\n  };\n\n  return (\n    <div>\n      <h1>{user.displayName}</h1>\n      <img src={avatar} className='w-24 h-24' />\n      <input value={name} onChange={e => setName(e.target.value)} />\n      <input type='file' onChange={handleAvatarChange} />\n      <button onClick={handleSave}>Save</button>\n    </div>\n  );\n}\n```\n\nHarden this for production: handle missing/cancelled file picks, name length limits, loading states, API errors, long display names overflowing on mobile, and any i18n concerns (RTL, non-Latin chars). Output the fixed code with a brief explanation of each fix.",
+  "expected_outcomes": [
+    "Handles cancelled file picker (checks e.target.files[0] exists)",
+    "Enforces max name length (client + notes server validation needed)",
+    "Save button shows loading state (disabled + spinner/text)",
+    "try/catch around fetch with user-visible error message",
+    "Long display name truncates or wraps gracefully on mobile",
+    "Mentions RTL/non-Latin character handling",
+    "Concrete code for each fix"
+  ]
+}

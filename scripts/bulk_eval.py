@@ -122,19 +122,16 @@ async def run_bulk_eval(intent: str):
                           f"{a['id'].split('/')[-1]:<30} vs "
                           f"{b['id'].split('/')[-1]:<30}", end=" ", flush=True)
 
-                    scenario_desc = sc.get("description", "")
                     expected = sc.get("expected_outcomes", "")
                     if isinstance(expected, str):
                         try:
                             expected = json.loads(expected)
                         except Exception:
                             expected = []
-                    exp_text = "\n".join(f"- {o}" for o in expected) if expected else ""
-                    full_scenario = f"{scenario_desc}\n\nExpected:\n{exp_text}"
 
                     comp = await judge_comparison(
-                        intent_desc=f"{intent}: {sc.get('task', '')[:300]}",
-                        scenario_desc=full_scenario,
+                        task=sc.get("task", ""),
+                        expected_outcomes=expected,
                         output_a=oa,
                         output_b=ob,
                     )

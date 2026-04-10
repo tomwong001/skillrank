@@ -55,6 +55,9 @@ tr.top:hover{background:rgba(34,211,238,.16)}
 .rk-1{color:var(--ac);text-shadow:0 0 12px var(--ag)}
 .sn{font-weight:500}
 .sa{color:var(--ts);font-size:12px}
+.skill-link{text-decoration:none;color:var(--tp);transition:color .15s}
+.skill-link:hover{color:var(--ac)}
+.skill-link:hover .sn{text-decoration:underline}
 .rt{font-family:var(--fm);font-weight:500;font-variant-numeric:tabular-nums}
 .ci{font-family:var(--fm);font-size:11px;color:var(--tm);font-variant-numeric:tabular-nums}
 .wr{font-family:var(--fm);font-variant-numeric:tabular-nums}
@@ -154,9 +157,10 @@ async function loadLeaderboard(intent) {
       const topClass = i === 0 ? ' top' : '';
       const rkClass = i === 0 ? ' rk-1' : '';
       const trusted = s.trusted ? '<span class="badge badge-ok">trusted</span>' : '<span class="badge badge-ac">new</span>';
+      const gh = s.github_url || s.repo_url;
       rows += `<tr class="${topClass}">
         <td class="rk${rkClass}">${s.rank}</td>
-        <td><span class="sn">${s.skill_id}</span><br><span class="sa">@${s.author}</span></td>
+        <td><a href="${gh}" target="_blank" rel="noopener" class="skill-link"><span class="sn">${s.skill_id}</span></a><br><span class="sa">@${s.author}</span></td>
         <td class="rt" ${i===0?'style="color:var(--ac)"':''}>${s.rating}</td>
         <td class="ci">&plusmn;${s.confidence_95}</td>
         <td class="wr ${wrClass}">${(s.win_rate*100).toFixed(1)}%</td>

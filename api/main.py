@@ -194,7 +194,7 @@ async def get_submission_status(submission_id: str):
 
 
 @app.get("/api/skills")
-async def list_skills(intent: str = "ship_code"):
+async def list_skills(intent: str):
     """List ranked skills for an intent."""
     db = await get_db()
     try:
@@ -209,6 +209,15 @@ async def list_skills(intent: str = "ship_code"):
 
         ranked = []
         for i, s in enumerate(skills):
+            # Build a direct GitHub URL to the skill's actual location.
+            # If skill_path is set, link to the subdirectory. Otherwise repo root.
+            repo_url = s["repo_url"].rstrip("/")
+            skill_path = s.get("skill_path") or ""
+            if skill_path:
+                github_url = f"{repo_url}/tree/main/{skill_path}"
+            else:
+                github_url = repo_url
+
             ranked.append({
                 "rank": i + 1,
                 "skill_id": s["id"],
@@ -224,6 +233,8 @@ async def list_skills(intent: str = "ship_code"):
                 "comparisons": s["comparisons"],
                 "trusted": s["comparisons"] >= 10,
                 "repo_url": s["repo_url"],
+                "skill_path": skill_path,
+                "github_url": github_url,
                 "commit_sha": s["commit_sha"],
                 "updated_at": s["updated_at"],
             })
@@ -240,6 +251,8 @@ async def list_skills(intent: str = "ship_code"):
 
 INTENT_DESCRIPTIONS = {
     "react_component_design": "Building React/UI components with modern tooling (shadcn, Tailwind, TypeScript)",
+    "ui_polish": "Polishing UI quality — alignment, spacing, performance, edge cases, design system consistency",
+    "seo_cro": "SEO audits and conversion rate optimization for marketing pages and signup flows",
     "ship_code": "Shipping code to production (PRs, tests, deploys)",
     # Add more as new intents are introduced
 }

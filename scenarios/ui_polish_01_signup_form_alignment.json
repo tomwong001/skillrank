@@ -1,0 +1,18 @@
+{
+  "id": "ui_polish_01",
+  "intent": "ui_polish",
+  "name": "Signup form with alignment and spacing issues",
+  "description": "A SaaS signup form looks unprofessional — fields are misaligned (left edges don't line up), spacing is inconsistent (some fields have 12px gap, others 24px), the 'Sign up' button sits too close to the last input, error messages are in a different font from labels, and the card padding is uneven.",
+  "repo_url": "internal/saas-signup",
+  "branch": "main",
+  "task": "Here is the current React/Tailwind signup form code:\n\n```tsx\n<div className='p-6'>\n  <h2 className='text-2xl mb-3'>Sign up</h2>\n  <div className='mb-4'>\n    <label className='block text-sm'>Email</label>\n    <input className='w-full border rounded px-3 py-2' />\n    <p className='text-red-500 text-xs mt-1 font-mono'>Email required</p>\n  </div>\n  <div className='mb-2'>\n    <label className='block text-sm font-medium ml-2'>Password</label>\n    <input className='w-full border rounded px-4 py-1' />\n  </div>\n  <div className='mb-6'>\n    <label className='block text-sm'>Full name</label>\n    <input className='w-full border-2 rounded-lg px-3 py-3' />\n  </div>\n  <button className='bg-blue-500 text-white px-4 py-2 rounded'>Sign up</button>\n</div>\n```\n\nPolish this to production quality. Fix alignment, spacing, typography consistency, error message styling, and visual hierarchy. Output the revised component code with explanations of what you changed and why.",
+  "expected_outcomes": [
+    "Consistent spacing between all fields (single spacing scale)",
+    "All labels use the same font weight and size",
+    "Error messages use same font as labels (not mono)",
+    "Consistent input padding across all fields",
+    "Clear visual hierarchy: title > labels > inputs > help text",
+    "Button has adequate breathing room above it",
+    "Specific Tailwind classes changed, with before/after explanation"
+  ]
+}

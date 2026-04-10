@@ -27,9 +27,11 @@ RETRY_DELAY = 2.0  # seconds
 
 JUDGE_PROMPT = """Compare two AI skill attempts at this task. Judge which attempt better accomplishes it.
 
-TASK: {intent_description}
+TASK:
+{task}
 
-SCENARIO: {scenario_description}
+EXPECTED OUTCOMES:
+{expected_outcomes}
 
 --- ATTEMPT {label_first} ---
 {output_first}
@@ -38,10 +40,10 @@ SCENARIO: {scenario_description}
 {output_second}
 
 Judge criteria:
-1. Completeness: does it implement all requirements?
+1. Completeness: does it implement all requirements in the task?
 2. Correctness: will the code/commands actually work? Uses real APIs, not invented ones?
 3. Concreteness: working code vs hand-wavy "you would do X" commentary?
-4. Best practices: types, error handling, accessibility, sensible defaults?
+4. Expected outcome coverage: how many of the expected outcomes does it hit?
 
 Reply with ONE line only in this exact format:
 {label_first}|one-sentence reason
@@ -54,7 +56,7 @@ Do NOT prefix with "VERDICT|" — just the letter and reason. Example:
 {label_first}|Uses shadcn Card primitives with cva variants while the other hardcodes Tailwind classes."""
 
 
-async def call_judge(intent_desc: str, scenario_desc: str,
+async def call_judge(task: str, expected_outcomes: list,
                      output_a: str, output_b: str,
                      swap_order: bool = False) -> dict:
     """
@@ -68,13 +70,19 @@ async def call_judge(intent_desc: str, scenario_desc: str,
         label_first, label_second = "A", "B"
         first_output, second_output = output_a, output_b
 
+    # Format expected outcomes as bullet list
+    if isinstance(expected_outcomes, list):
+        expected_text = "\n".join(f"- {o}" for o in expected_outcomes) if expected_outcomes else "(none specified)"
+    else:
+        expected_text = str(expected_outcomes) if expected_outcomes else "(none specified)"
+
     prompt = JUDGE_PROMPT.format(
-        intent_description=intent_desc,
-        scenario_description=scenario_desc,
+        task=task,
+        expected_outcomes=expected_text,
         label_first=label_first,
         label_second=label_second,
-        output_first=first_output[:4000],  # truncate to avoid token overflow
-        output_second=second_output[:4000],
+        output_first=first_output[:6000],  # truncate to avoid token overflow
+        output_second=second_output[:6000],
     )
 
     logger.info(f"Judge call: model={JUDGE_MODEL}, swap={swap_order}, key_set={bool(OPENROUTER_KEY)}")
@@ -160,7 +168,7 @@ def _parse_verdict(text: str, label_first: str, label_second: str, swapped: bool
     return "INCONCLUSIVE", f"unrecognized: {raw_verdict}"
 
 
-async def judge_comparison(intent_desc: str, scenario_desc: str,
+async def judge_comparison(task: str, expected_outcomes: list,
                            output_a: str, output_b: str,
                            num_runs: int = 3) -> dict:
     """
@@ -176,7 +184,7 @@ async def judge_comparison(intent_desc: str, scenario_desc: str,
 
     # Run judge calls concurrently (paid models have no rate limit)
     tasks = [
-        call_judge(intent_desc, scenario_desc, output_a, output_b, swap)
+        call_judge(task, expected_outcomes, output_a, output_b, swap)
         for swap in swap_orders
     ]
     results = await asyncio.gather(*tasks)
